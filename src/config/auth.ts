@@ -1,10 +1,10 @@
 import { Lucia } from "lucia";
 import { NodePostgresAdapter } from "@lucia-auth/adapter-postgresql";
-import { db, DatabaseUser } from "./db";
+import { db, DatabaseUser } from "./db.ts";
 
 const adapter = new NodePostgresAdapter(db, {
   user: "users",
-  session: "user_session",
+  session: "sessions",
 });
 
 export const lucia = new Lucia(adapter, {
@@ -16,10 +16,10 @@ export const lucia = new Lucia(adapter, {
   getUserAttributes: (attributes) => {
     return {
       username: attributes.username,
-      email: attributes.email,
-      first_name: attributes.first_name,
-      last_name: attributes.last_name,
-      avatar: attributes.avatar,
+      // email: attributes.email,
+      // first_name: attributes.first_name,
+      // last_name: attributes.last_name,
+      // avatar: attributes.avatar,
     };
   },
 });

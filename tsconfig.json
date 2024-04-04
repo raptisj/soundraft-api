@@ -1,6 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+      "allowImportingTsExtensions": true,
+      "noEmit": true,
       "baseUrl": "",
       "alwaysStrict": false,
       "declaration": true,
@@ -9,8 +11,12 @@
       "forceConsistentCasingInFileNames": true,
       "importHelpers": true,
       "lib": ["es6", "dom", "es2017"],
-      "module": "commonjs",
+      // "module": "commonjs",
+      // "module": "ESNext",
       // "moduleResolution": "node",
+      "target": "ESNext",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
       "noEmitHelpers": true,
       "noFallthroughCasesInSwitch": true,
       "noImplicitAny": true,
@@ -23,9 +29,14 @@
       "esModuleInterop": true,
       "pretty": true,
       "sourceMap": false,
+      // "allowImportingTsExtensions": false,
+      // "allowImportingTsExtensions": true,
       // "strict": true,
-      "target": "ES2019",
+      // "target": "ES2019",
       "noErrorTruncation": true
+  },
+  "ts-node": {
+    "esm": true
   },
   "exclude": ["node_modules", "tmp", "dist"]
 }

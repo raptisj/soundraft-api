@@ -1,4 +1,5 @@
-import { Pool } from "pg";
+import * as pg from "pg";
+const { Pool } = pg.default;
 
 const db = new Pool({
   user: process.env.DATABASE_USER,
@@ -14,8 +15,8 @@ export interface DatabaseUser {
   id: string;
   username: string;
   password: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  avatar: string;
+  // email: string;
+  // first_name: string;
+  // last_name: string;
+  // avatar: string;
 }
