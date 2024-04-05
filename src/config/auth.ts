@@ -15,11 +15,10 @@ export const lucia = new Lucia(adapter, {
   },
   getUserAttributes: (attributes) => {
     return {
-      username: attributes.username,
-      // email: attributes.email,
-      // first_name: attributes.first_name,
-      // last_name: attributes.last_name,
-      // avatar: attributes.avatar,
+      username: attributes.username || "",
+      email: attributes.email,
+      first_name: attributes.first_name || "",
+      last_name: attributes.last_name || "",
     };
   },
 });

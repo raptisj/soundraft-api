@@ -5,16 +5,14 @@ import { lucia } from "../config/auth.ts";
 import { db, DatabaseUser } from "../config/db.ts";
 
 const signUp = async (req: Request, res: Response) => {
-  const username: string | null = req.body.username ?? null;
-  if (
-    !username ||
-    username.length < 3 ||
-    username.length > 31 ||
-    !/^[a-z0-9_-]+$/.test(username)
-  ) {
-    console.log("Invalid username");
-    return res.status(404).send("Invalid username");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const email: string | null = req.body.email ?? null;
+
+  if (!email || !emailRegex.test(email)) {
+    console.log("Invalid email");
+    return res.status(404).send("Invalid email");
   }
+
   const password: string | null = req.body.password ?? null;
   if (!password || password.length < 6 || password.length > 255) {
     console.log("Invalid password");
@@ -26,8 +24,8 @@ const signUp = async (req: Request, res: Response) => {
 
   try {
     await db.query(
-      "INSERT INTO users (id, username, password) VALUES ($1, $2, $3)",
-      [userId, username, hashedPassword]
+      "INSERT INTO users (id, email, password) VALUES ($1, $2, $3)",
+      [userId, email, hashedPassword]
     );
 
     const session = await lucia.createSession(userId, {});
@@ -44,15 +42,12 @@ const signUp = async (req: Request, res: Response) => {
 };
 
 const login = async (req: Request, res: Response) => {
-  const username: string | null = req.body.username ?? null;
-  if (
-    !username ||
-    username.length < 3 ||
-    username.length > 31 ||
-    !/^[a-z0-9_-]+$/.test(username)
-  ) {
-    console.log("Invalid username");
-    return res.status(404).send("Invalid username");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const email: string | null = req.body.email ?? null;
+
+  if (!email || !emailRegex.test(email)) {
+    console.log("Invalid email");
+    return res.status(404).send("Invalid email");
   }
 
   const password: string | null = req.body.password ?? null;
@@ -61,15 +56,15 @@ const login = async (req: Request, res: Response) => {
     return res.status(404).send("Invalid password");
   }
 
-  const userResult = await db.query("SELECT * FROM users WHERE username = $1", [
-    username,
+  const userResult = await db.query("SELECT * FROM users WHERE email = $1", [
+    email,
   ]);
 
   const existingUser = userResult?.rows[0] as DatabaseUser | undefined;
 
   if (!existingUser) {
-    console.log("Incorrect username or password");
-    return res.status(404).send("User exists");
+    console.log("User already exists");
+    return res.status(404).send("User already exists");
   }
 
   const validPassword = await new Argon2id().verify(
@@ -106,12 +101,42 @@ const currentUser = async (_: Request, res: Response) => {
     return res.status(401).end();
   }
 
-  console.log(res.locals.user.id, "user id");
-
   const userData = {
     ...res.locals.user,
   };
 
   return res.status(200).json(userData);
 };
-export { signUp, login, logout, currentUser };
+
+const updateUserProfile = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).end();
+  }
+  const userId = res.locals.user.id;
+
+  const userResult = await db.query("SELECT * FROM users WHERE id = $1", [
+    userId,
+  ]);
+
+  const user = userResult?.rows[0] as DatabaseUser | undefined;
+
+  const username: string = req.body?.username ?? user.username ?? "";
+  const firstName: string = req.body?.first_name ?? user.first_name ?? "";
+  const lastName: string = req.body?.last_name ?? user.last_name ?? "";
+
+  try {
+    const results = await db.query(
+      "UPDATE users SET username = $2, first_name = $3, last_name = $4 WHERE id = $1 RETURNING *",
+      [userId, username, firstName, lastName]
+    );
+
+    const updatedUser = results.rows[0];
+
+    return res.status(200).json({ updatedUser });
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
+};
+
+export { signUp, login, logout, currentUser, updateUserProfile };

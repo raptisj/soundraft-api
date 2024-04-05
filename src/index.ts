@@ -2,6 +2,7 @@ import express, { Application } from "express";
 // import { db } from "./config/db.ts";
 import { lucia } from "./config/auth.ts";
 import { router as authRouter } from "./router/auth.ts";
+import { router as projectRouter } from "./router/projects.ts";
 // import { verifyRequestOrigin } from "lucia";
 
 const port = process.env.PORT || 4000;
@@ -59,9 +60,11 @@ app.use(async (req, res, next) => {
 });
 
 app.use("/", authRouter);
+app.use("/", projectRouter);
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Musaik app listening at http://localhost:${port}`);
+  // await lucia.deleteExpiredSessions();
 });
 
 // db.connect((err, client) => {
@@ -74,6 +77,9 @@ app.listen(port, () => {
 //   id TEXT NOT NULL PRIMARY KEY,
 //   username TEXT NOT NULL UNIQUE,
 //   password TEXT NOT NULL
+// email TEXT,
+// first_name TEXT,
+// last_name TEXT
 // );
 //   `;
 

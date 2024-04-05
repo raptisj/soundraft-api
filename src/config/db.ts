@@ -15,8 +15,7 @@ export interface DatabaseUser {
   id: string;
   username: string;
   password: string;
-  // email: string;
-  // first_name: string;
-  // last_name: string;
-  // avatar: string;
+  email: string;
+  first_name: string;
+  last_name: string;
 }
