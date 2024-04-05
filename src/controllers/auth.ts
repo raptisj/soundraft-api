@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { generateId } from "lucia";
 import { lucia } from "../config/auth.ts";
 import { db, DatabaseUser } from "../config/db.ts";
+import { errors } from "../constants/index.ts";
 
 const signUp = async (req: Request, res: Response) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -10,13 +11,13 @@ const signUp = async (req: Request, res: Response) => {
 
   if (!email || !emailRegex.test(email)) {
     console.log("Invalid email");
-    return res.status(404).send("Invalid email");
+    return res.status(404).json({ errors: errors.INVALID_EMAIL });
   }
 
   const password: string | null = req.body.password ?? null;
   if (!password || password.length < 6 || password.length > 255) {
     console.log("Invalid password");
-    return res.status(404).send("Invalid password");
+    return res.status(404).json({ errors: errors.INVALID_PASSWORD });
   }
 
   const hashedPassword = await new Argon2id().hash(password);
@@ -37,7 +38,7 @@ const signUp = async (req: Request, res: Response) => {
     return res.status(201).end();
   } catch (e) {
     console.log(e, "e");
-    return res.status(400).send("Something went wrong!");
+    return res.status(400).json({ errors: errors.GENERIC });
   }
 };
 
@@ -47,13 +48,13 @@ const login = async (req: Request, res: Response) => {
 
   if (!email || !emailRegex.test(email)) {
     console.log("Invalid email");
-    return res.status(404).send("Invalid email");
+    return res.status(404).json({ errors: errors.INVALID_EMAIL });
   }
 
   const password: string | null = req.body.password ?? null;
   if (!password || password.length < 6 || password.length > 255) {
     console.log("Invalid password");
-    return res.status(404).send("Invalid password");
+    return res.status(404).json({ errors: errors.INVALID_PASSWORD });
   }
 
   const userResult = await db.query("SELECT * FROM users WHERE email = $1", [
@@ -64,7 +65,7 @@ const login = async (req: Request, res: Response) => {
 
   if (!existingUser) {
     console.log("User already exists");
-    return res.status(404).send("User already exists");
+    return res.status(404).json({ errors: errors.USER_EXISTS });
   }
 
   const validPassword = await new Argon2id().verify(
@@ -72,8 +73,7 @@ const login = async (req: Request, res: Response) => {
     password
   );
   if (!validPassword) {
-    console.log("Incorrect username or password");
-    return res.status(404).send("Incorrect username or password");
+    return res.status(404).json({ errors: errors.INCORRECT_PASSWORD });
   }
 
   const session = await lucia.createSession(existingUser.id, {});
@@ -98,7 +98,7 @@ const logout = async (_: Request, res: Response) => {
 
 const currentUser = async (_: Request, res: Response) => {
   if (!res.locals.user) {
-    return res.status(401).end();
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
   const userData = {
@@ -110,7 +110,7 @@ const currentUser = async (_: Request, res: Response) => {
 
 const updateUserProfile = async (req: Request, res: Response) => {
   if (!res.locals.user) {
-    return res.status(401).end();
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
   const userId = res.locals.user.id;
 

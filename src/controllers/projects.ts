@@ -1,45 +1,37 @@
 import { Request, Response } from "express";
 import { db } from "../config/db.ts";
 import { v4 as uuidv4 } from "uuid";
+import { errors } from "../constants/index.ts";
+import * as projectServices from "../services/projects.ts";
+import * as roleServices from "../services/roles.ts";
 
-const getAll = async (req: Request, res: Response) => {
-  // check auth
-  //
-  // get projects current user participates
+const getAll = async (_: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+  const userId = res.locals.user.id;
+
+  try {
+    const { data } = await projectServices.getAll(userId);
+
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
 };
 
 const getSingle = async (req: Request, res: Response) => {
   if (!res.locals.user) {
-    return res.status(401).end();
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
   const id = req.params.id;
 
   try {
-    const result = await db.query(
-      `SELECT p.*, json_agg(json_build_object(
-        'user_id', u.id,
-        'username', u.username,
-        'email', u.email,
-        'first_name', u.first_name,
-        'last_name', u.last_name,
-        'role', roles.role,
-        'role_id', roles.id,
-        'role_type', roles.role_type,
-        'role_created_at', roles.created_at
-        )) 
-      AS members
-      FROM projects p
-      INNER JOIN roles ON p.id = roles.project_id
-      INNER JOIN users u ON roles.user_id = u.id
-      WHERE p.id = $1
-      GROUP BY p.id;`,
-      [id]
-    );
+    const { data } = await projectServices.getSingle(id);
 
-    const project = result?.rows[0];
-
-    return res.status(200).json({ project });
+    return res.status(200).json(data);
   } catch (e) {
     console.log(e, "e");
     return res.status(404).end();
@@ -48,7 +40,7 @@ const getSingle = async (req: Request, res: Response) => {
 
 const create = async (req: Request, res: Response) => {
   if (!res.locals.user) {
-    return res.status(401).end();
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
   const userId = res.locals.user.id;
 
@@ -58,21 +50,28 @@ const create = async (req: Request, res: Response) => {
   const name: string = req.body?.name;
   const description: string = req.body?.description ?? "";
   if (!name) {
-    return res.status(404).send("Name field is mandatory");
+    return res.status(404).json({ errors: errors.REQUIRED_PROJECT_NAME });
   }
 
   try {
-    const projectResult = await db.query(
-      "INSERT INTO projects (id, name, description, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *",
-      [projectId, name, description]
+    // const projectResult = await db.query(
+    //   "INSERT INTO projects (id, name, description, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *",
+    //   [projectId, name, description]
+    // );
+    // const newProject = projectResult?.rows[0];
+    const { data: newProject } = await projectServices.create(
+      projectId,
+      name,
+      description
     );
-    const newProject = projectResult?.rows[0];
 
     // create admin role
-    await db.query(
-      "INSERT INTO roles (id, role, role_type, user_id, project_id, created_at) VALUES ($1, $2, $3, $4, $5, NOW())",
-      [roleId, "admin", "project", userId, newProject.id]
-    );
+    // await db.query(
+    //   "INSERT INTO roles (id, role, role_type, user_id, project_id, created_at) VALUES ($1, $2, $3, $4, $5, NOW())",
+    //   [roleId, "admin", "project", userId, newProject.id]
+    // );
+
+    await roleServices.createRole(roleId, userId, newProject.id);
 
     return res.status(200).json({ newProject });
   } catch (e) {
@@ -82,25 +81,81 @@ const create = async (req: Request, res: Response) => {
 };
 
 const update = async (req: Request, res: Response) => {
-  // check auth
-  //
-  // const results = await db.query(
-  //   "UPDATE  SET username = $2, first_name = $3, last_name = $4 WHERE id = $1 RETURNING *",
-  //   [userId, username, firstName, lastName]
-  // );
-  // check permission if user can update project
-  //
-  // update project
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const userId = res.locals.user.id;
+  const id = req.params.id;
+
+  const project = await db.query("SELECT * FROM projects WHERE id = $1", [id]);
+
+  const projectData = project?.rows[0];
+
+  const name: string = req.body?.name ?? projectData.name;
+  const description: string =
+    req.body?.description ?? projectData.description ?? "";
+
+  try {
+    const results = await db.query(
+      `UPDATE projects p SET name = $2, description = $3
+        WHERE p.id = $1
+        AND EXISTS (  
+        SELECT 1
+        FROM roles
+        INNER JOIN users u ON roles.user_id = u.id
+        WHERE roles.project_id = $1
+          AND u.id = $4
+          AND roles.role = 'admin'
+      ) RETURNING *;`,
+      [id, name, description, userId]
+    );
+
+    const updatedProject = results?.rows[0];
+
+    return res.status(200).json({ updatedProject });
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
 };
 
 const del = async (req: Request, res: Response) => {
-  // check auth
-  //
-  // check permission if user can delete project
-  //
-  // delete project
-  //
-  // delete tickets
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const userId = res.locals.user.id;
+  const id = req.params.id;
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+    await client.query(
+      `DELETE FROM projects
+        WHERE id = $1
+        AND EXISTS (
+        SELECT 1
+        FROM roles
+        INNER JOIN users u ON roles.user_id = u.id
+        WHERE roles.project_id = $1
+          AND u.id = $2
+          AND roles.role = 'admin'
+        );`,
+      [id, userId]
+    );
+    await client.query(`DELETE FROM roles WHERE project_id = $1;`, [id]);
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({});
+  } catch (e) {
+    await client.query("ROLLBACK");
+    console.log(e, "e");
+    return res.status(404).end();
+  } finally {
+    client.release();
+  }
 };
 
 export { getAll, getSingle, create, update, del };
