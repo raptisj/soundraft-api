@@ -64,8 +64,8 @@ const login = async (req: Request, res: Response) => {
   const existingUser = userResult?.rows[0] as DatabaseUser | undefined;
 
   if (!existingUser) {
-    console.log("User already exists");
-    return res.status(404).json({ errors: errors.USER_EXISTS });
+    console.log("User does not exists");
+    return res.status(404).json({ errors: errors.USER_DOES_NOT_EXISTS });
   }
 
   const validPassword = await new Argon2id().verify(

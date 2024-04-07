@@ -1,0 +1,68 @@
+import { db } from "../config/db.ts";
+
+// type Invitation = {
+//   id: string;
+//   invited_email: string;
+//   role: string;
+//   // has_account: boolean;
+//   role_type: string;
+//   invited_by: string;
+//   status: string;
+//   project_id: string;
+// };
+
+export const create = async (payload: any): Promise<any> => {
+  const {
+    id,
+    invited_email,
+    role,
+    has_account = false,
+    role_type,
+    invited_by,
+    invitation_status,
+    project_id,
+  } = payload;
+
+  const results = await db.query(
+    "INSERT INTO invitations (id, invited_email, role, has_account, role_type, invited_by, invitation_status, project_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING *;",
+    [
+      id,
+      invited_email,
+      role,
+      has_account,
+      role_type,
+      invited_by,
+      invitation_status,
+      project_id,
+    ]
+  );
+
+  return {
+    data: results?.rows[0],
+  };
+};
+
+export const send = async (payload: any): Promise<any> => {
+  const { id, has_account, invited_email, role } = payload;
+
+  const inviteToken = btoa(
+    JSON.stringify({ id, has_account, role, invited_email })
+  );
+
+  // console.log(inviteToken, "inviteToken");
+  // console.log(JSON.parse(atob(inviteToken)), "PARSE inviteToken");
+
+  const url = `http://localhost:3000/auth/accept-invitation/${inviteToken}`;
+  console.log(url, "url in email");
+
+  return {};
+};
+
+export const accept = async (invitationId: string): Promise<any> => {
+  await db.query(
+    "UPDATE invitations SET invitation_status = $2 WHERE id = $1 RETURNING *;",
+    [invitationId, "accepted"]
+  );
+
+  return {};
+};

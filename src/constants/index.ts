@@ -27,4 +27,12 @@ export const errors = {
     message: "User already exists",
     code: "user_exists",
   },
+  USER_DOES_NOT_EXISTS: {
+    message: "User does not exist",
+    code: "user_does_not_exists",
+  },
+  USER_NOT_ADMIN: {
+    message: "User is not admin",
+    code: "user_not_admin",
+  },
 };

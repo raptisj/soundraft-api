@@ -8,7 +8,6 @@ import { router as projectRouter } from "./router/projects.ts";
 const port = process.env.PORT || 4000;
 const app: Application = express();
 
-// app.use(express.urlencoded());
 app.use(express.json());
 
 // app.use((req, res, next) => {
