@@ -260,7 +260,7 @@ const removeMember = async (req: Request, res: Response) => {
 
   const userRole = userRoleResult?.rows[0];
 
-  if (userRole.role === "admin") {
+  if (userRole.role !== "admin") {
     console.log("User is not admin");
     return res.status(404).json({ errors: errors.USER_NOT_ADMIN });
   }
