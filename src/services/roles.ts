@@ -27,3 +27,37 @@ export const removeFromProject = async (
 
   return {};
 };
+
+export const getRole = async (
+  memberId: string,
+  projectId: string
+): Promise<any> => {
+  const userRoleResult = await db.query(
+    "SELECT * FROM roles WHERE user_id = $1 AND project_id = $2;",
+    [memberId, projectId]
+  );
+
+  const userRole = userRoleResult?.rows[0];
+
+  const isAdmin = () => {
+    return userRole?.role === "admin";
+  };
+
+  return {
+    role: userRole,
+    isAdmin,
+  };
+};
+
+export const isProjectAdmin = async (id: string, userId: string) => {
+  try {
+    const results = await db.query(
+      "SELECT role FROM roles WHERE project_id = $1 AND user_id = $2;",
+      [id, userId]
+    );
+
+    return results?.rows[0].role === "admin";
+  } catch (e) {
+    throw new Error();
+  }
+};

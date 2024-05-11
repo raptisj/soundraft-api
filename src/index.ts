@@ -3,6 +3,7 @@ import express, { Application } from "express";
 import { lucia } from "./config/auth.ts";
 import { router as authRouter } from "./router/auth.ts";
 import { router as projectRouter } from "./router/projects.ts";
+import { router as ticketRouter } from "./router/tickets.ts";
 // import { verifyRequestOrigin } from "lucia";
 
 const port = process.env.PORT || 4000;
@@ -34,9 +35,11 @@ app.use(express.json());
 
 app.use(async (req, res, next) => {
   const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
+
   if (!sessionId) {
     res.locals.user = null;
     res.locals.session = null;
+
     return next();
   }
 
@@ -47,6 +50,7 @@ app.use(async (req, res, next) => {
       lucia.createSessionCookie(session.id).serialize()
     );
   }
+
   if (!session) {
     res.appendHeader(
       "Set-Cookie",
@@ -55,11 +59,13 @@ app.use(async (req, res, next) => {
   }
   res.locals.session = session;
   res.locals.user = user;
+
   return next();
 });
 
 app.use("/", authRouter);
 app.use("/", projectRouter);
+app.use("/", ticketRouter);
 
 app.listen(port, async () => {
   console.log(`Musaik app listening at http://localhost:${port}`);

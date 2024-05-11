@@ -57,6 +57,7 @@ const create = async (req: Request, res: Response) => {
   }
 
   try {
+    // TODO: make this a transaction
     const { data } = await projectService.create(projectId, name, description);
 
     await roleService.createRole(roleId, "admin", userId, data.id);
@@ -209,6 +210,8 @@ const acceptInvitation = async (req: Request, res: Response) => {
         [userId, email, hashedPassword]
       );
 
+      // TODO: add auth service and remove the above
+      // e.g. await authService.add(payload);
       await invitationService.accept(invitationId);
 
       await roleService.createRole(roleId, invitation.role, userId, projectId);
@@ -253,14 +256,9 @@ const removeMember = async (req: Request, res: Response) => {
   const memberId = req.body?.member_id;
   const projectId = req.params.id;
 
-  const userRoleResult = await db.query(
-    "SELECT * FROM roles WHERE user_id = $1 AND project_id = $2;",
-    [userId, projectId]
-  );
+  const userRole = await roleService.getRole(userId, projectId);
 
-  const userRole = userRoleResult?.rows[0];
-
-  if (userRole.role !== "admin") {
+  if (!userRole.isAdmin()) {
     console.log("User is not admin");
     return res.status(404).json({ errors: errors.USER_NOT_ADMIN });
   }
