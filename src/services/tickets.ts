@@ -85,25 +85,33 @@ export const getAllVersions = async (ticketId: string) => {
 };
 
 export const getVersion = async (id: string | undefined, ticketId: string) => {
-  if (!id) {
+  try {
+    if (!id) {
+      const results = await db.query(
+        "SELECT * FROM ticket_versions WHERE ticket_id = $1 ORDER BY created_at DESC LIMIT 1;",
+        [ticketId]
+      );
+
+      return {
+        data: results?.rows[0],
+      };
+    }
+
     const results = await db.query(
-      "SELECT * FROM ticket_versions WHERE ticket_id = $1 ORDER BY created_at DESC LIMIT 1;",
-      [ticketId]
+      "SELECT * FROM ticket_versions WHERE id = $1 AND ticket_id = $2;",
+      [id, ticketId]
     );
+
+    if (!results?.rows[0]) {
+      throw new Error();
+    }
 
     return {
       data: results?.rows[0],
     };
+  } catch (error) {
+    throw new Error();
   }
-
-  const results = await db.query(
-    "SELECT * FROM ticket_versions WHERE id = $1 AND ticket_id = $2;",
-    [id, ticketId]
-  );
-
-  return {
-    data: results?.rows[0],
-  };
 };
 
 type CreateVersionProps = {
