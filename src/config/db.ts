@@ -50,9 +50,20 @@ export interface DatabaseInvitation {
 
 export interface DatabaseTicket {
   id: string;
-  // username: string;
-  // password: string;
-  // email: string;
-  // first_name: string;
-  // last_name: string;
+  created_at: Date;
+  project_id: string;
+  title: string;
+  description?: string;
+  ticket_status?: string;
+  latest_version_id?: string;
+  deadline?: Date;
+  assignee?: string | null;
+}
+
+export interface DatabaseTicketVersion {
+  id: string;
+  created_at: Date;
+  ticket_id: string;
+  notes?: string;
+  name: string;
 }

@@ -1,4 +1,6 @@
+import { CustomError } from "../config/errors.ts";
 import { db } from "../config/db.ts";
+import { errors } from "../constants/index.ts";
 
 export const getAll = async (projectId: string) => {
   const results = await db.query(
@@ -7,7 +9,7 @@ export const getAll = async (projectId: string) => {
   );
 
   return {
-    data: results?.rows[0] ?? [],
+    data: results?.rows ?? [],
   };
 };
 
@@ -53,6 +55,35 @@ export const update = async (id: string, payload: any): Promise<any> => {
   };
 };
 
+export const deleteTicket = async (id: string) => {
+  try {
+    await db.query(`DELETE FROM tickets WHERE id = $1;`, [id]);
+  } catch (error) {
+    throw new Error();
+  }
+
+  return {
+    data: {},
+  };
+};
+
+//////////
+////////
+////// ticket versions
+////
+//
+
+export const getAllVersions = async (ticketId: string) => {
+  const results = await db.query(
+    "SELECT * FROM ticket_versions WHERE ticket_id = $1;",
+    [ticketId]
+  );
+
+  return {
+    data: results?.rows ?? [],
+  };
+};
+
 export const getVersion = async (id: string | undefined, ticketId: string) => {
   if (!id) {
     const results = await db.query(
@@ -75,29 +106,19 @@ export const getVersion = async (id: string | undefined, ticketId: string) => {
   };
 };
 
-export const deleteTicket = async (id: string) => {
-  try {
-    await db.query(`DELETE FROM tickets WHERE id = $1;`, [id]);
-  } catch (error) {
-    throw new Error();
-  }
-
-  return {
-    data: {},
-  };
-};
-
 type CreateVersionProps = {
   id: string;
   ticketId: string;
   name?: string;
+  notes?: string;
 };
+
 export const createVersion = async (payload: CreateVersionProps) => {
-  const { id, ticketId, name = "0" } = payload;
+  const { id, ticketId, name = "0", notes = "" } = payload;
 
   const results = await db.query(
-    "INSERT INTO ticket_versions (id, ticket_id, name, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *;",
-    [id, ticketId, name]
+    "INSERT INTO ticket_versions (id, ticket_id, name, notes, created_at) VALUES ($1, $2, $3, $4 NOW()) RETURNING *;",
+    [id, ticketId, name, notes]
   );
 
   return {
@@ -105,13 +126,32 @@ export const createVersion = async (payload: CreateVersionProps) => {
   };
 };
 
-export const getAllVersions = async (ticketId: string) => {
-  const results = await db.query(
-    "SELECT * FROM ticket_versions WHERE ticket_id = $1;",
-    [ticketId]
-  );
+export const deleteTicketVersion = async (
+  ticketId: string,
+  versionId: string
+) => {
+  try {
+    const results = await db.query(
+      "SELECT * FROM ticket_versions WHERE ticket_id = $1;",
+      [ticketId]
+    );
+
+    const versions = results?.rows;
+    const canDelete = versions.length > 1;
+
+    if (canDelete) {
+      await db.query(`DELETE FROM ticket_versions WHERE id = $1;`, [versionId]);
+    } else {
+      throw new Error();
+    }
+  } catch (error) {
+    throw new CustomError(
+      errors.UNABLE_TO_DELETE_LAST_VERSION.message,
+      errors.UNABLE_TO_DELETE_LAST_VERSION.error_code
+    );
+  }
 
   return {
-    data: results?.rows[0],
+    data: {},
   };
 };

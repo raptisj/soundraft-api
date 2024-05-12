@@ -1,38 +1,42 @@
 export const errors = {
   GENERIC: {
     message: "Something went wrong!",
-    code: "generic",
+    error_code: "generic",
   },
   UNAUTHENTICATED: {
     message: "User is not authenticated",
-    code: "unauthenticated",
+    error_code: "unauthenticated",
   },
   REQUIRED_PROJECT_NAME: {
     message: "Name field is mandatory",
-    code: "required_project_name",
+    error_code: "required_project_name",
   },
   INVALID_EMAIL: {
     message: "Invalid email",
-    code: "invalid_email",
+    error_code: "invalid_email",
   },
   INVALID_PASSWORD: {
     message: "Invalid password",
-    code: "invalid_password",
+    error_code: "invalid_password",
   },
   INCORRECT_PASSWORD: {
     message: "Incorrect password",
-    code: "incorrect_password",
+    error_code: "incorrect_password",
   },
   USER_EXISTS: {
     message: "User already exists",
-    code: "user_exists",
+    error_code: "user_exists",
   },
   USER_DOES_NOT_EXISTS: {
     message: "User does not exist",
-    code: "user_does_not_exists",
+    error_code: "user_does_not_exists",
   },
   USER_NOT_ADMIN: {
     message: "User is not admin",
-    code: "user_not_admin",
+    error_code: "user_not_admin",
+  },
+  UNABLE_TO_DELETE_LAST_VERSION: {
+    message: "Can not delete the last remaining version",
+    error_code: "can_not_delete_last_version",
   },
 };

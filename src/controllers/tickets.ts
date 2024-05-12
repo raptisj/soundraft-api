@@ -3,6 +3,7 @@ import { errors } from "../constants/index.ts";
 import * as ticketService from "../services/tickets.ts";
 import * as roleService from "../services/roles.ts";
 import { getGeneratedId } from "../utils/index.ts";
+import { CustomError } from "../config/errors.ts";
 
 const getAll = async (req: Request, res: Response) => {
   if (!res.locals.user) {
@@ -156,7 +157,6 @@ const getAllVersions = async (req: Request, res: Response) => {
   try {
     const { data } = await ticketService.getAllVersions(ticketId);
 
-    console.log(data, "data");
     return res.status(200).json(data);
   } catch (e) {
     console.log(e, "e");
@@ -164,4 +164,91 @@ const getAllVersions = async (req: Request, res: Response) => {
   }
 };
 
-export { getAll, getSingle, create, update, del, getAllVersions };
+const getSingleVersion = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const ticketId = req.params.ticketId;
+  const versionId = req.params.versionId;
+
+  try {
+    const { data } = await ticketService.getVersion(versionId, ticketId);
+
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).json({ errors: errors.GENERIC });
+  }
+};
+
+const createVersion = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const versionId = getGeneratedId();
+  const ticketId = req.params.ticketId;
+  const versionName: string = req.body?.version_name ?? "";
+
+  try {
+    const { data } = await ticketService.createVersion({
+      id: versionId,
+      ticketId,
+      name: versionName,
+    });
+
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
+};
+
+const deleteVersion = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const userId = res.locals.user.id;
+  const ticketId = req.params.ticketId;
+  const versionId = req.params.versionId;
+  const projectId = req.params.projectId;
+  const isAdmin = await roleService.isProjectAdmin(projectId, userId);
+
+  if (!isAdmin) {
+    return res.status(404).json({ errors: errors.USER_NOT_ADMIN });
+  }
+
+  try {
+    const { data } = await ticketService.deleteTicketVersion(
+      ticketId,
+      versionId
+    );
+
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e, "e");
+
+    let error;
+    if (e instanceof CustomError) {
+      error = { message: e.message, error_code: e.errorCode };
+    } else {
+      error = errors.GENERIC;
+    }
+
+    return res.status(404).json({ errors: error });
+  }
+};
+
+export {
+  getAll,
+  getSingle,
+  create,
+  update,
+  del,
+  getAllVersions,
+  getSingleVersion,
+  createVersion,
+  deleteVersion,
+};

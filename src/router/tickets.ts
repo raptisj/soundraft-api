@@ -18,13 +18,17 @@ router.get(
   "/projects/:projectId/tickets/:ticketId/versions",
   ticketController.getAllVersions
 );
-// router.get(
-//   "/projects/:id/tickets/:ticketId/versions/:versionId",
-//   ticketController.getAllSingleVersion
-// );
-// router.post(
-//   "/projects/:id/tickets/:ticketId/versions",
-//   ticketController.createVersion
-// );
+router.get(
+  "/projects/:projectId/tickets/:ticketId/versions/:versionId",
+  ticketController.getSingleVersion
+);
+router.post(
+  "/projects/:projectId/tickets/:ticketId/versions",
+  ticketController.createVersion
+);
+router.delete(
+  "/projects/:projectId/tickets/:ticketId/versions/:versionId",
+  ticketController.deleteVersion
+);
 
 export { router };
