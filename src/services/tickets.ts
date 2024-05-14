@@ -153,10 +153,7 @@ export const deleteTicketVersion = async (
       throw new Error();
     }
   } catch (error) {
-    throw new CustomError(
-      errors.UNABLE_TO_DELETE_LAST_VERSION.message,
-      errors.UNABLE_TO_DELETE_LAST_VERSION.error_code
-    );
+    throw new CustomError(errors.UNABLE_TO_DELETE_LAST_VERSION);
   }
 
   return {

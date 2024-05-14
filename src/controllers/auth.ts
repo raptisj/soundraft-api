@@ -4,19 +4,17 @@ import { generateId } from "lucia";
 import { lucia } from "../config/auth.ts";
 import { db, DatabaseUser } from "../config/db.ts";
 import { errors } from "../constants/index.ts";
+import { isValidEmail, isValidPassword } from "../utils/index.ts";
 
 const signUp = async (req: Request, res: Response) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const email: string | null = req.body.email ?? null;
 
-  if (!email || !emailRegex.test(email)) {
-    console.log("Invalid email");
+  if (!isValidEmail(email)) {
     return res.status(404).json({ errors: errors.INVALID_EMAIL });
   }
 
   const password: string | null = req.body.password ?? null;
-  if (!password || password.length < 6 || password.length > 255) {
-    console.log("Invalid password");
+  if (!isValidPassword(password)) {
     return res.status(404).json({ errors: errors.INVALID_PASSWORD });
   }
 
@@ -35,7 +33,7 @@ const signUp = async (req: Request, res: Response) => {
       lucia.createSessionCookie(session.id).serialize()
     );
 
-    return res.status(201).end();
+    return res.status(201).json({ status: "success" });
   } catch (e) {
     console.log(e, "e");
     return res.status(400).json({ errors: errors.GENERIC });
@@ -43,54 +41,60 @@ const signUp = async (req: Request, res: Response) => {
 };
 
 const login = async (req: Request, res: Response) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const email: string | null = req.body.email ?? null;
+  try {
+    const email: string | null = req.body.email ?? null;
+    if (!isValidEmail(email)) {
+      return res
+        .status(404)
+        .json({ errors: errors.INVALID_EMAIL, status: "error" });
+    }
 
-  if (!email || !emailRegex.test(email)) {
-    console.log("Invalid email");
-    return res.status(404).json({ errors: errors.INVALID_EMAIL });
+    const password: string | null = req.body.password ?? null;
+    if (!isValidPassword(password)) {
+      return res.status(404).json({ errors: errors.INVALID_PASSWORD });
+    }
+
+    // TODO: make this service
+    const userResult = await db.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+
+    const existingUser = userResult?.rows[0] as DatabaseUser | undefined;
+
+    if (!existingUser) {
+      console.log("User does not exists");
+      return res.status(404).json({ errors: errors.USER_DOES_NOT_EXISTS });
+    }
+
+    const validPassword = await new Argon2id().verify(
+      existingUser.password,
+      password
+    );
+    if (!validPassword) {
+      return res
+        .status(404)
+        .json({ errors: errors.INCORRECT_PASSWORD, status: "error" });
+    }
+
+    const session = await lucia.createSession(existingUser.id, {});
+    res
+      .appendHeader(
+        "Set-Cookie",
+        lucia.createSessionCookie(session.id).serialize()
+      )
+      .appendHeader("Location", "/");
+
+    return res.status(200).json({ status: "success" });
+  } catch (error) {
+    return res.status(404).json({ errors: errors.GENERIC, status: "error" });
   }
-
-  const password: string | null = req.body.password ?? null;
-  if (!password || password.length < 6 || password.length > 255) {
-    console.log("Invalid password");
-    return res.status(404).json({ errors: errors.INVALID_PASSWORD });
-  }
-
-  const userResult = await db.query("SELECT * FROM users WHERE email = $1", [
-    email,
-  ]);
-
-  const existingUser = userResult?.rows[0] as DatabaseUser | undefined;
-
-  if (!existingUser) {
-    console.log("User does not exists");
-    return res.status(404).json({ errors: errors.USER_DOES_NOT_EXISTS });
-  }
-
-  const validPassword = await new Argon2id().verify(
-    existingUser.password,
-    password
-  );
-  if (!validPassword) {
-    return res.status(404).json({ errors: errors.INCORRECT_PASSWORD });
-  }
-
-  const session = await lucia.createSession(existingUser.id, {});
-  res
-    .appendHeader(
-      "Set-Cookie",
-      lucia.createSessionCookie(session.id).serialize()
-    )
-    .appendHeader("Location", "/");
-
-  return res.status(200).end();
 };
 
 const logout = async (_: Request, res: Response) => {
   if (!res.locals.session) {
     return res.status(401).end();
   }
+
   await lucia.invalidateSession(res.locals.session.id);
   res.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize());
   return res.status(200).end();

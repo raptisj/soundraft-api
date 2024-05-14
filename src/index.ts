@@ -1,16 +1,22 @@
 import express, { Application } from "express";
-// import { db } from "./config/db.ts";
 import { lucia } from "./config/auth.ts";
 import { router as authRouter } from "./router/auth.ts";
 import { router as projectRouter } from "./router/projects.ts";
 import { router as ticketRouter } from "./router/tickets.ts";
+import cors from "cors";
+import { errorHandler } from "./config/errors.ts";
 // import { verifyRequestOrigin } from "lucia";
 
 const port = process.env.PORT || 4000;
 const app: Application = express();
 
-app.use(express.json());
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
 
+app.use(express.json());
+app.use(cors(corsOptions));
 // app.use((req, res, next) => {
 //   if (req.method === "GET") {
 //     return next();
@@ -67,40 +73,9 @@ app.use("/", authRouter);
 app.use("/", projectRouter);
 app.use("/", ticketRouter);
 
+app.use(errorHandler);
+
 app.listen(port, async () => {
   console.log(`Musaik app listening at http://localhost:${port}`);
   // await lucia.deleteExpiredSessions();
 });
-
-// db.connect((err, client) => {
-//   if (err) {
-//     return console.error("Error acquiring client", err.stack);
-//   }
-
-// const createUserTableQuery = `
-// CREATE TABLE IF NOT EXISTS users (
-//   id TEXT NOT NULL PRIMARY KEY,
-//   username TEXT NOT NULL UNIQUE,
-//   password TEXT NOT NULL
-// email TEXT,
-// first_name TEXT,
-// last_name TEXT
-// );
-//   `;
-
-// const createSessionTableQuery = `
-// CREATE TABLE IF NOT EXISTS sessions (
-//   id TEXT NOT NULL PRIMARY KEY,
-//   expires_at TIMESTAMPTZ NOT NULL,
-//   user_id TEXT NOT NULL,
-//   FOREIGN KEY (user_id) REFERENCES users(id)
-// );
-// `;
-
-// client.query(createUserTableQuery);
-// client.query(createSessionTableQuery);
-// });
-// email TEXT,
-// first_name TEXT,
-// last_name TEXT,
-// avatar TEXT

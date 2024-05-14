@@ -73,20 +73,21 @@ export const update = async (
   id: string,
   name: string,
   description: string,
+  projectStatus: string,
   userId: string
 ): Promise<any> => {
   const results = await db.query(
-    `UPDATE projects p SET name = $2, description = $3
+    `UPDATE projects p SET name = $2, description = $3, project_status = $4
       WHERE p.id = $1
       AND EXISTS (  
       SELECT 1
       FROM roles
       INNER JOIN users u ON roles.user_id = u.id
       WHERE roles.project_id = $1
-        AND u.id = $4
+        AND u.id = $5
         AND roles.role = 'admin'
     ) RETURNING *;`,
-    [id, name, description, userId]
+    [id, name, description, projectStatus, userId]
   );
 
   return {

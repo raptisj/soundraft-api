@@ -43,10 +43,10 @@ export const create = async (payload: any): Promise<any> => {
 };
 
 export const send = async (payload: any): Promise<any> => {
-  const { id, has_account, invited_email, role } = payload;
+  const { id, has_account, invited_email, role, project_id } = payload;
 
   const inviteToken = btoa(
-    JSON.stringify({ id, has_account, role, invited_email })
+    JSON.stringify({ id, has_account, invited_email, role, project_id })
   );
 
   // console.log(inviteToken, "inviteToken");

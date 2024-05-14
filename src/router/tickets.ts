@@ -13,7 +13,7 @@ router.post("/projects/:projectId/tickets", ticketController.create);
 router.put("/projects/:projectId/tickets/:ticketId", ticketController.update);
 router.delete("/projects/:projectId/tickets/:ticketId", ticketController.del);
 
-// versions
+// ticket versions
 router.get(
   "/projects/:projectId/tickets/:ticketId/versions",
   ticketController.getAllVersions

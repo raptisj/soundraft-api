@@ -39,4 +39,14 @@ export const errors = {
     message: "Can not delete the last remaining version",
     error_code: "can_not_delete_last_version",
   },
+  TICKET_DOES_NOT_EXISTS: {
+    message: "Ticket does not exist",
+    error_code: "ticket_does_not_exists",
+    status_code: 404,
+  },
+  RESOURCE_DOES_NOT_EXISTS: {
+    message: "Resource does not exist",
+    error_code: "resource_does_not_exists",
+    status_code: 404,
+  },
 };

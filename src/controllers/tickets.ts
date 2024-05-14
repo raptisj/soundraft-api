@@ -1,7 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { errors } from "../constants/index.ts";
 import * as ticketService from "../services/tickets.ts";
 import * as roleService from "../services/roles.ts";
+import * as projectService from "../services/projects.ts";
 import { getGeneratedId } from "../utils/index.ts";
 import { CustomError } from "../config/errors.ts";
 
@@ -22,15 +23,17 @@ const getAll = async (req: Request, res: Response) => {
   }
 };
 
-const getSingle = async (req: Request, res: Response) => {
+const getSingle = async (req: Request, res: Response, next: NextFunction) => {
   if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
   const ticketId = req.params.ticketId;
+  const projectId = req.params.projectId;
   const versionId: any = req.query.version_id;
 
   try {
+    const { data: project } = await projectService.getSingle(projectId);
     const { data: ticket } = await ticketService.getSingle(ticketId);
 
     const { data: ticketVersion } = await ticketService.getVersion(
@@ -38,10 +41,15 @@ const getSingle = async (req: Request, res: Response) => {
       ticketId
     );
 
-    return res.status(200).json({ ticket, ticketVersion });
+    if (!ticket || !ticketService || !project) {
+      const err = new CustomError(errors.RESOURCE_DOES_NOT_EXISTS);
+      return next(err);
+    }
+
+    return res.status(200).json({ ticket, ticketVersion, project });
   } catch (e) {
     console.log(e, "e");
-    return res.status(404).end();
+    return res.status(404).json({ errors: errors.GENERIC });
   }
 };
 
@@ -232,7 +240,7 @@ const deleteVersion = async (req: Request, res: Response) => {
 
     let error;
     if (e instanceof CustomError) {
-      error = { message: e.message, error_code: e.errorCode };
+      error = { message: e.message, error_code: e.error_code };
     } else {
       error = errors.GENERIC;
     }

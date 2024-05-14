@@ -1,8 +1,39 @@
-export class CustomError extends Error {
-  errorCode: string;
+import { Request, Response, NextFunction } from "express";
 
-  constructor(message: string, errorCode: string) {
+export class CustomError extends Error {
+  error_code: string;
+  status_code: number;
+
+  constructor({
+    message,
+    error_code,
+    status_code,
+  }: {
+    message: string;
+    error_code: string;
+    status_code?: number;
+  }) {
     super(message);
-    this.errorCode = errorCode;
+    this.error_code = error_code;
+    this.status_code = status_code || 500;
   }
 }
+
+export const errorHandler = (
+  error: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  res.status(error.status_code).json({
+    message: error.message,
+    errorCode: error.error_code,
+    statusCode: error.status_code,
+  });
+};
+
+// export const asyncHandler = (func) => {
+//   return (req, res, next) => {
+//       func(req, res, next).catch(err => next(err));
+//   }
+// }

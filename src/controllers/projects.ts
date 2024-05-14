@@ -6,6 +6,7 @@ import { generateId } from "lucia";
 import { errors } from "../constants/index.ts";
 import * as projectService from "../services/projects.ts";
 import * as roleService from "../services/roles.ts";
+import * as ticketService from "../services/tickets.ts";
 import * as invitationService from "../services/invitations.ts";
 
 const getAll = async (_: Request, res: Response) => {
@@ -32,9 +33,10 @@ const getSingle = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
-    const { data } = await projectService.getSingle(id);
+    const { data: project } = await projectService.getSingle(id);
+    const { data: tickets } = await ticketService.getAll(id);
 
-    return res.status(200).json(data);
+    return res.status(200).json({ project, tickets });
   } catch (e) {
     console.log(e, "e");
     return res.status(404).end();
@@ -82,11 +84,19 @@ const update = async (req: Request, res: Response) => {
   const projectData = project?.rows[0];
 
   const name: string = req.body?.name ?? projectData.name;
+  const projectStatus: string =
+    req.body?.project_status ?? projectData.project_status;
   const description: string =
     req.body?.description ?? projectData.description ?? "";
 
   try {
-    const { data } = await projectService.update(id, name, description, userId);
+    const { data } = await projectService.update(
+      id,
+      name,
+      description,
+      projectStatus,
+      userId
+    );
 
     return res.status(200).json(data);
   } catch (e) {
