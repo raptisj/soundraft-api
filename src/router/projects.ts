@@ -9,9 +9,6 @@ router.get("/projects/:id", projectController.getSingle);
 router.post("/projects", projectController.create);
 router.put("/projects/:id", projectController.update);
 router.delete("/projects/:id", projectController.del);
-router.post("/projects/:id/invite/create", projectController.inviteToProject);
-router.post("/projects/:id/invite/accept", projectController.acceptInvitation);
-// router.post("/projects/:id/invite/revoke", projectController.revokeInvitation);
 router.post("/projects/:id/members/remove", projectController.removeMember);
 
 export { router };

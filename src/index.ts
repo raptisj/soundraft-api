@@ -3,6 +3,8 @@ import { lucia } from "./config/auth.ts";
 import { router as authRouter } from "./router/auth.ts";
 import { router as projectRouter } from "./router/projects.ts";
 import { router as ticketRouter } from "./router/tickets.ts";
+import { router as invitationsRouter } from "./router/invitations.ts";
+
 import cors from "cors";
 import { errorHandler } from "./config/errors.ts";
 // import { verifyRequestOrigin } from "lucia";
@@ -72,6 +74,7 @@ app.use(async (req, res, next) => {
 app.use("/", authRouter);
 app.use("/", projectRouter);
 app.use("/", ticketRouter);
+app.use("/", invitationsRouter);
 
 app.use(errorHandler);
 

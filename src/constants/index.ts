@@ -32,7 +32,7 @@ export const errors = {
     error_code: "user_does_not_exists",
   },
   USER_NOT_ADMIN: {
-    message: "User is not admin",
+    message: "User is not admin. This action can not be made.",
     error_code: "user_not_admin",
   },
   UNABLE_TO_DELETE_LAST_VERSION: {

@@ -1,11 +1,13 @@
+import { getGeneratedId } from "../utils/index.ts";
 import { db } from "../config/db.ts";
 
 export const createRole = async (
-  roleId: string,
   role: string,
   userId: string,
   projectId: string
 ): Promise<any> => {
+  const roleId = getGeneratedId();
+
   const results = await db.query(
     "INSERT INTO roles (id, role, role_type, user_id, project_id, created_at) VALUES ($1, $2, $3, $4, $5, NOW())",
     [roleId, role, "project", userId, projectId]

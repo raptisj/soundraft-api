@@ -49,13 +49,26 @@ export const send = async (payload: any): Promise<any> => {
     JSON.stringify({ id, has_account, invited_email, role, project_id })
   );
 
-  // console.log(inviteToken, "inviteToken");
-  // console.log(JSON.parse(atob(inviteToken)), "PARSE inviteToken");
-
-  const url = `http://localhost:3000/auth/accept-invitation/${inviteToken}`;
+  const url = `http://localhost:3000/auth/accept-invitation/?invitation_token=${inviteToken}`;
   console.log(url, "url in email");
 
   return {};
+};
+
+export const get = async (inviteToken: string): Promise<any> => {
+  const decodedInvitation = JSON.parse(atob(inviteToken));
+  const { id } = decodedInvitation;
+
+  const results = await db.query("SELECT * FROM invitations WHERE id = $1;", [
+    id,
+  ]);
+
+  // const url = `http://localhost:3000/auth/accept-invitation/${inviteToken}`;
+  // console.log(url, "url in email");
+
+  return {
+    data: results?.rows[0],
+  };
 };
 
 export const accept = async (invitationId: string): Promise<any> => {

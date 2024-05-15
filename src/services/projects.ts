@@ -1,4 +1,6 @@
+import { getGeneratedId } from "../utils/index.ts";
 import { db } from "../config/db.ts";
+import { errors } from "../constants/index.ts";
 
 export const getAll = async (userId: string): Promise<any> => {
   const results = await db.query(
@@ -54,18 +56,33 @@ export const getSingle = async (id: string): Promise<any> => {
   };
 };
 
+type CreateProjectProps = {
+  name: string;
+  description?: string;
+};
+
 export const create = async (
-  projectId: string,
-  name: string,
-  description: string
-): Promise<any> => {
+  payload: CreateProjectProps
+): Promise<{ data: any; error: any }> => {
+  const { name, description = "" } = payload;
+  const projectId = getGeneratedId();
+
+  if (!name) {
+    return {
+      data: null,
+      error: errors.REQUIRED_PROJECT_NAME,
+    };
+  }
+
+  // abstract this away
   const results = await db.query(
     "INSERT INTO projects (id, name, description, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *",
     [projectId, name, description]
   );
 
   return {
-    data: results?.rows[0],
+    data: results?.rows[0], // here mapper/dto ???
+    error: null,
   };
 };
 
@@ -95,32 +112,11 @@ export const update = async (
   };
 };
 
-export const deleteProject = async (id: string, userId: string) => {
-  const client = await db.connect();
-
+export const deleteProject = async (id: string) => {
   try {
-    await client.query("BEGIN");
-    await client.query(
-      `DELETE FROM projects
-        WHERE id = $1
-        AND EXISTS (
-        SELECT 1
-        FROM roles
-        INNER JOIN users u ON roles.user_id = u.id
-        WHERE roles.project_id = $1
-          AND u.id = $2
-          AND roles.role = 'admin'
-        );`,
-      [id, userId]
-    );
-    await client.query(`DELETE FROM roles WHERE project_id = $1;`, [id]);
-
-    await client.query("COMMIT");
+    await db.query(`DELETE FROM projects WHERE id = $1;`, [id]);
   } catch (error) {
-    await client.query("ROLLBACK");
     throw new Error();
-  } finally {
-    client.release();
   }
 
   return {
