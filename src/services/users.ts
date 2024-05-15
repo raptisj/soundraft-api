@@ -1,3 +1,4 @@
+import { userDTO } from "../dto/index.ts";
 import { db, DatabaseUser } from "../config/db.ts";
 
 export const getByEmail = async (email: string) => {
@@ -31,6 +32,6 @@ export const updateProfile = async (payload: any, userData: any) => {
   );
 
   return {
-    data: result?.rows[0],
+    data: userDTO(result?.rows[0]),
   };
 };

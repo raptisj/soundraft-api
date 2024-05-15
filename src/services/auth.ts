@@ -4,6 +4,7 @@ import { isValidEmail, isValidPassword } from "../utils/index.ts";
 import { db } from "../config/db.ts";
 import { errors } from "../constants/index.ts";
 import { lucia } from "../config/auth.ts";
+import { userDTO } from "../dto/index.ts";
 
 export const signUp = async (
   payload: any
@@ -42,20 +43,9 @@ export const signUp = async (
 
   const session = await lucia.createSession(userId, {});
 
-  // TODO: move this to saparate file
-  const userMapper = (user: any) => {
-    return {
-      id: user.id,
-      username: user.id,
-      email: user.email,
-      first_name: user.first_name,
-      last_name: user.last_name,
-    };
-  };
-
   return {
     error: null,
     session,
-    data: userMapper(results?.rows[0]),
+    data: userDTO(results?.rows[0]),
   };
 };
