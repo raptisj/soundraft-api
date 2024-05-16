@@ -4,7 +4,7 @@ import { errors } from "../constants/index.ts";
 
 export const getAll = async (projectId: string) => {
   const results = await db.query(
-    "SELECT * FROM tickets WHERE project_id = $1;",
+    "SELECT * FROM tickets WHERE project_id = $1 ORDER BY created_at DESC;",
     [projectId]
   );
 
@@ -75,7 +75,7 @@ export const deleteTicket = async (id: string) => {
 
 export const getAllVersions = async (ticketId: string) => {
   const results = await db.query(
-    "SELECT * FROM ticket_versions WHERE ticket_id = $1;",
+    "SELECT * FROM ticket_versions WHERE ticket_id = $1 ORDER BY created_at DESC;",
     [ticketId]
   );
 
@@ -122,10 +122,10 @@ type CreateVersionProps = {
 };
 
 export const createVersion = async (payload: CreateVersionProps) => {
-  const { id, ticketId, name = "0", notes = "" } = payload;
+  const { id, ticketId, name = "0.1", notes = "" } = payload;
 
   const results = await db.query(
-    "INSERT INTO ticket_versions (id, ticket_id, name, notes, created_at) VALUES ($1, $2, $3, $4 NOW()) RETURNING *;",
+    "INSERT INTO ticket_versions (id, ticket_id, name, notes, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *;",
     [id, ticketId, name, notes]
   );
 

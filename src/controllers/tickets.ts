@@ -41,12 +41,18 @@ const getSingle = async (req: Request, res: Response, next: NextFunction) => {
       ticketId
     );
 
+    const { data: allTicketVersions } = await ticketService.getAllVersions(
+      ticketId
+    );
+
     if (!ticket || !ticketService || !project) {
       const err = new CustomError(errors.RESOURCE_DOES_NOT_EXISTS);
       return next(err);
     }
 
-    return res.status(200).json({ ticket, ticketVersion, project });
+    return res
+      .status(200)
+      .json({ ticket, ticketVersion, project, allTicketVersions }); // comments ???
   } catch (e) {
     console.log(e, "e");
     return res.status(404).json({ errors: errors.GENERIC });
@@ -198,12 +204,14 @@ const createVersion = async (req: Request, res: Response) => {
   const versionId = getGeneratedId();
   const ticketId = req.params.ticketId;
   const versionName: string = req.body?.version_name ?? "";
+  const versionNotes: string = req.body?.notes ?? "";
 
   try {
     const { data } = await ticketService.createVersion({
       id: versionId,
       ticketId,
       name: versionName,
+      notes: versionNotes,
     });
 
     return res.status(200).json(data);
