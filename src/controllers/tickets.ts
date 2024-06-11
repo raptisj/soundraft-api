@@ -3,6 +3,7 @@ import { errors } from "../constants/index.ts";
 import * as ticketService from "../services/tickets.ts";
 import * as roleService from "../services/roles.ts";
 import * as projectService from "../services/projects.ts";
+import * as trackService from "../services/tracks.ts";
 import { getGeneratedId } from "../utils/index.ts";
 import { CustomError } from "../config/errors.ts";
 
@@ -64,12 +65,26 @@ const create = async (req: Request, res: Response) => {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
+  // console.log(req.files.track_url, "req.files.track_url");
+
+  // const trackUrl = req.files.track_url || null;
+  const trackUrl =
+    "https://cdn.freesound.org/previews/736/736345_8432823-lq.mp3" || null;
+
+  if (!trackUrl) {
+    return res.status(404).json({ errors: errors.GENERIC });
+  }
+
+  // console.log(req.body, "req.body");
+
   const ticketId = getGeneratedId();
+  const trackId = getGeneratedId();
   const versionId = getGeneratedId();
   const projectId = req.params.projectId;
 
   const assignee: string = req.body?.assignee ?? "unassigned"; // user id
-  const deadline: string = req.body?.deadline ?? null;
+  const deadline: string =
+    req.body?.deadline !== "null" ? req.body?.deadline : null;
   const status: string = req.body?.status ?? "no_status";
   const title: string = req.body?.title;
   const description: string = req.body?.description ?? "";
@@ -84,13 +99,23 @@ const create = async (req: Request, res: Response) => {
     description,
   };
 
+  const trackPayload = {
+    trackId,
+    ticketId,
+    projectId,
+    trackUrl,
+    versionId,
+  };
+
+  console.log(payload, "payload for create ticket");
+  console.log(trackPayload, "payload for create track");
+
   try {
     // TODO: make this a transaction
-    const { data } = await ticketService.create(payload);
-
-    await ticketService.createVersion({ id: versionId, ticketId });
-
-    return res.status(200).json(data);
+    // const { data } = await ticketService.create(payload);
+    // await ticketService.createVersion({ id: versionId, ticketId });
+    // await trackService.create(trackPayload);
+    // return res.status(200).json(data);
   } catch (e) {
     console.log(e, "e");
     return res.status(404).end();

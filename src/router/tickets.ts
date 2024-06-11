@@ -2,6 +2,7 @@ import express from "express";
 
 import * as ticketController from "../controllers/tickets.ts";
 
+import fileUpload from "express-fileupload";
 const router = express.Router();
 
 router.get("/projects/:projectId/tickets", ticketController.getAll);
@@ -9,7 +10,11 @@ router.get(
   "/projects/:projectId/tickets/:ticketId",
   ticketController.getSingle
 );
-router.post("/projects/:projectId/tickets", ticketController.create);
+router.post(
+  "/projects/:projectId/tickets",
+  fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }),
+  ticketController.create
+);
 router.put("/projects/:projectId/tickets/:ticketId", ticketController.update);
 router.delete("/projects/:projectId/tickets/:ticketId", ticketController.del);
 
