@@ -68,14 +68,17 @@ const create = async (req: Request, res: Response) => {
   // console.log(req.files.track_url, "req.files.track_url");
 
   // const trackUrl = req.files.track_url || null;
+  // TODO: add bucket implementation
   const trackUrl =
-    "https://cdn.freesound.org/previews/736/736345_8432823-lq.mp3" || null;
+    req.body?.track_url ||
+    // "https://cdn.freesound.org/previews/736/736345_8432823-lq.mp3" ||
+    null;
+
+  const trackName = req.body?.track_name || null;
 
   if (!trackUrl) {
     return res.status(404).json({ errors: errors.GENERIC });
   }
-
-  // console.log(req.body, "req.body");
 
   const ticketId = getGeneratedId();
   const trackId = getGeneratedId();
@@ -105,6 +108,7 @@ const create = async (req: Request, res: Response) => {
     projectId,
     trackUrl,
     versionId,
+    trackName,
   };
 
   console.log(payload, "payload for create ticket");
@@ -112,10 +116,13 @@ const create = async (req: Request, res: Response) => {
 
   try {
     // TODO: make this a transaction
-    // const { data } = await ticketService.create(payload);
-    // await ticketService.createVersion({ id: versionId, ticketId });
-    // await trackService.create(trackPayload);
-    // return res.status(200).json(data);
+    const { data } = await ticketService.create(payload);
+
+    await ticketService.createVersion({ id: versionId, ticketId });
+
+    await trackService.create(trackPayload);
+
+    return res.status(200).json(data);
   } catch (e) {
     console.log(e, "e");
     return res.status(404).end();
