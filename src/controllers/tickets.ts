@@ -42,6 +42,14 @@ const getSingle = async (req: Request, res: Response, next: NextFunction) => {
       ticketId
     );
 
+    const { data: track } = await trackService.getSingle(
+      ticketId,
+      ticketVersion.id
+    );
+
+    const { data: tracks } = await trackService.getAll(ticketId);
+    const trackNames = tracks.map((t) => t.track_name) || [];
+
     const { data: allTicketVersions } = await ticketService.getAllVersions(
       ticketId
     );
@@ -51,9 +59,14 @@ const getSingle = async (req: Request, res: Response, next: NextFunction) => {
       return next(err);
     }
 
-    return res
-      .status(200)
-      .json({ ticket, ticketVersion, project, allTicketVersions }); // comments ???
+    return res.status(200).json({
+      ticket,
+      current_version: ticketVersion,
+      project,
+      versions: allTicketVersions,
+      track,
+      track_names: trackNames,
+    });
   } catch (e) {
     console.log(e, "e");
     return res.status(404).json({ errors: errors.GENERIC });
@@ -65,14 +78,10 @@ const create = async (req: Request, res: Response) => {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
-  // console.log(req.files.track_url, "req.files.track_url");
-
-  // const trackUrl = req.files.track_url || null;
   // TODO: add bucket implementation
-  const trackUrl =
-    req.body?.track_url ||
-    // "https://cdn.freesound.org/previews/736/736345_8432823-lq.mp3" ||
-    null;
+  // const trackUrl = req.files.track_url || null;
+  // console.log(req.files.track_url, "req.files.track_url");
+  const trackUrl = req.body?.track_url || null;
 
   const trackName = req.body?.track_name || null;
 
@@ -111,8 +120,8 @@ const create = async (req: Request, res: Response) => {
     trackName,
   };
 
-  console.log(payload, "payload for create ticket");
-  console.log(trackPayload, "payload for create track");
+  // console.log(payload, "payload for create ticket");
+  // console.log(trackPayload, "payload for create track");
 
   try {
     // TODO: make this a transaction

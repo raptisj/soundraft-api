@@ -57,7 +57,7 @@ export const update = async (id: string, payload: any): Promise<any> => {
 
 export const deleteTicket = async (id: string) => {
   try {
-    await db.query(`DELETE FROM tickets WHERE id = $1;`, [id]);
+    await db.query("DELETE FROM tickets WHERE id = $1;", [id]);
   } catch (error) {
     throw new Error();
   }
@@ -86,6 +86,7 @@ export const getAllVersions = async (ticketId: string) => {
 
 export const getVersion = async (id: string | undefined, ticketId: string) => {
   try {
+    // query latests version if version_id is not provided
     if (!id) {
       const results = await db.query(
         "SELECT * FROM ticket_versions WHERE ticket_id = $1 ORDER BY created_at DESC LIMIT 1;",

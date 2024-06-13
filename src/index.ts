@@ -21,6 +21,7 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
+
 // app.use((req, res, next) => {
 //   if (req.method === "GET") {
 //     return next();
