@@ -9,6 +9,24 @@ export const getGeneratedId = () => {
 };
 
 /**
+ * Generates random id and prepends the entity.
+ * e.g. project_fsdf98sf09sdf809ds, ticket_fdjfs9df8s9f89s9f8
+ */
+
+type GenerateEntityIdType =
+  | "project"
+  | "ticket"
+  | "ticket_version"
+  | "track"
+  | "comment"
+  | "region";
+
+export const generateEntityId = (str: GenerateEntityIdType) => {
+  const id = uuidv4();
+  return `${str}_${id.replace(/-/g, "")}`;
+};
+
+/**
  Validates form fields
  */
 export const isValidEmail = (email: string) => {

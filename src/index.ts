@@ -3,7 +3,8 @@ import { lucia } from "./config/auth.ts";
 import { router as authRouter } from "./router/auth.ts";
 import { router as projectRouter } from "./router/projects.ts";
 import { router as ticketRouter } from "./router/tickets.ts";
-import { router as invitationsRouter } from "./router/invitations.ts";
+import { router as invitationRouter } from "./router/invitations.ts";
+import { router as commentRouter } from "./router/comments.ts";
 
 import fileUpload from "express-fileupload";
 import cors from "cors";
@@ -77,7 +78,8 @@ app.use(async (req, res, next) => {
 app.use("/", authRouter);
 app.use("/", projectRouter);
 app.use("/", ticketRouter);
-app.use("/", invitationsRouter);
+app.use("/", invitationRouter);
+app.use("/", commentRouter);
 
 app.use(errorHandler);
 
