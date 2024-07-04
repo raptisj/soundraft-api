@@ -100,7 +100,7 @@ const create = async (req: Request, res: Response) => {
       const { data: region } = await commentService.createRegion(regionPayload);
       response.region = region;
     }
-    console.log(response, "response");
+
     return res.status(200).json(response);
   } catch (e) {
     console.log(e, "e");
@@ -108,4 +108,90 @@ const create = async (req: Request, res: Response) => {
   }
 };
 
-export { create, getAll };
+const update = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const ticketId = req.params.ticketId;
+  const commentId = req.params.commentId;
+
+  const ticketVersionId = req.body?.ticket_version_id || null;
+  const content = req.body?.content || "";
+
+  const regionId = req.body?.region_id || null;
+  const startString = req.body?.start_string || null;
+  const endString = req.body?.end_string || null;
+  const startInt = req.body?.start_int || null;
+  const endInt = req.body?.end_int || null;
+
+  if (!regionId || !ticketVersionId || !content) {
+    return res.status(404).json({ errors: errors.GENERIC });
+  }
+
+  const payload = {
+    commentId,
+    ticketId,
+    ticketVersionId,
+    content,
+  };
+
+  const regionPayload = {
+    regionId,
+    commentId,
+    startString,
+    endString,
+    startInt,
+    endInt,
+  };
+
+  try {
+    const { data: comment, error } = await commentService.update(payload);
+    if (error) {
+      return res.status(404).json({ errors: error });
+    }
+    let response = {
+      ...comment,
+      region: null,
+    } as any;
+
+    if (startInt && endInt) {
+      const { data: region } = await commentService.updateRegion(regionPayload);
+      response.region = region;
+    }
+
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
+};
+
+const del = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const userId = res.locals.user.id;
+  const commentId = req.params.commentId;
+
+  const regionId: any = req.query?.region_id || null;
+
+  const payload = {
+    commentId,
+    userId,
+  };
+
+  try {
+    if (regionId) {
+      await commentService.deleteRegion(regionId);
+    }
+    await commentService.deleteComment(payload);
+    return res.status(200).json({});
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
+};
+
+export { create, update, del, getAll };

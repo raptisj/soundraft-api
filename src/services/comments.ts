@@ -5,11 +5,6 @@ export const getAll = async (
   ticketVersionId: string,
   trackId: string
 ): Promise<any> => {
-  // const results = await db.query(
-  //   "SELECT * FROM comments WHERE ticket_id = $1 AND ticket_version_id = $2 AND track_id = $3 ORDER BY created_at DESC;",
-  //   [ticketId, ticketVersionId, trackId]
-  // );
-
   const results = await db.query(
     `SELECT c.*, json_build_object(
       'id', r.id,
@@ -64,6 +59,19 @@ export const create = async (payload: any): Promise<any> => {
   };
 };
 
+export const update = async (payload: any): Promise<any> => {
+  const { commentId, ticketId, ticketVersionId, content } = payload;
+
+  const results = await db.query(
+    "UPDATE comments SET content = $4 WHERE id = $1 AND ticket_id = $2 AND ticket_version_id = $3 RETURNING *;",
+    [commentId, ticketId, ticketVersionId, content]
+  );
+
+  return {
+    data: results?.rows[0],
+  };
+};
+
 export const createRegion = async (payload: any): Promise<any> => {
   const {
     regionId,
@@ -82,5 +90,48 @@ export const createRegion = async (payload: any): Promise<any> => {
 
   return {
     data: results?.rows[0],
+  };
+};
+
+export const updateRegion = async (payload: any): Promise<any> => {
+  const { regionId, commentId, startString, endString, startInt, endInt } =
+    payload;
+
+  const results = await db.query(
+    "UPDATE regions SET start_string = $3, end_string = $4, start_int = $5, end_int = $6 WHERE id = $1 AND comment_id = $2 RETURNING *;",
+    [regionId, commentId, startString, endString, startInt, endInt]
+  );
+
+  return {
+    data: results?.rows[0],
+  };
+};
+
+export const deleteComment = async (payload: any) => {
+  const { commentId, userId } = payload;
+
+  try {
+    await db.query("DELETE FROM comments WHERE id = $1 AND user_id = $2;", [
+      commentId,
+      userId,
+    ]);
+  } catch (error) {
+    throw new Error();
+  }
+
+  return {
+    data: {},
+  };
+};
+
+export const deleteRegion = async (id: string) => {
+  try {
+    await db.query("DELETE FROM regions WHERE id = $1;", [id]);
+  } catch (error) {
+    throw new Error();
+  }
+
+  return {
+    data: {},
   };
 };

@@ -4,17 +4,12 @@ import * as commentController from "../controllers/comments.ts";
 
 const router = express.Router();
 
-router.get(
-  "/projects/:projectId/tickets/:ticketId/comments",
-  commentController.getAll
-);
-// router.get("/projects/:id", commentController.getSingle);
-router.post(
-  "/projects/:projectId/tickets/:ticketId/comments",
-  commentController.create
-);
-// router.put("/projects/:id", commentController.update);
-// router.delete("/projects/:id", commentController.del);
-// router.post("/projects/:id/members/remove", commentController.removeMember);
+const COMMENTS_ENDPOINT = "/projects/:projectId/tickets/:ticketId/comments";
+const COMMENTS_ENDPOINT_ID = `${COMMENTS_ENDPOINT}/:commentId`;
+
+router.get(COMMENTS_ENDPOINT, commentController.getAll);
+router.post(COMMENTS_ENDPOINT, commentController.create);
+router.put(COMMENTS_ENDPOINT_ID, commentController.update);
+router.delete(COMMENTS_ENDPOINT_ID, commentController.del);
 
 export { router };
