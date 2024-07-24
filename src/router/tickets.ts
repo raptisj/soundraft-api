@@ -18,6 +18,9 @@ router.post(TICKETS_ENDPOINT, ticketController.create);
 router.put(TICKETS_ENDPOINT_ID, ticketController.update);
 router.delete(TICKETS_ENDPOINT_ID, ticketController.del);
 
+// track
+router.post(`${TICKETS_ENDPOINT_ID}/track`, ticketController.uploadTrack);
+
 // ticket versions
 router.get(TICKET_VERSIONS_ENDPOINT, ticketController.getAllVersions);
 router.get(TICKET_VERSIONS_ENDPOINT_ID, ticketController.getSingleVersion);

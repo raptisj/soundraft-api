@@ -20,7 +20,8 @@ export const getAll = async (userId: string): Promise<any> => {
     INNER JOIN roles ON p.id = roles.project_id
     INNER JOIN users u ON roles.user_id = u.id
     INNER JOIN roles project_roles ON p.id = project_roles.project_id AND project_roles.user_id = $1
-    GROUP BY p.id;`,
+    GROUP BY p.id 
+    ORDER BY created_at DESC;`,
     [userId]
   );
 

@@ -125,7 +125,7 @@ const update = async (req: Request, res: Response) => {
   const startInt = req.body?.start_int || null;
   const endInt = req.body?.end_int || null;
 
-  if (!regionId || !ticketVersionId || !content) {
+  if (!ticketVersionId || !content) {
     return res.status(404).json({ errors: errors.GENERIC });
   }
 
@@ -155,7 +155,7 @@ const update = async (req: Request, res: Response) => {
       region: null,
     } as any;
 
-    if (startInt && endInt) {
+    if (regionId && startInt && endInt) {
       const { data: region } = await commentService.updateRegion(regionPayload);
       response.region = region;
     }

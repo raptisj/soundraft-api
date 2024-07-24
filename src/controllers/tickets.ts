@@ -47,6 +47,7 @@ const getSingle = async (req: Request, res: Response, next: NextFunction) => {
       ticketVersion.id
     );
 
+    // get all track names from all versions in array format to send to supabase
     const { data: tracks } = await trackService.getAll(ticketId);
     const trackNames = tracks.map((t) => t.track_name) || [];
 
@@ -85,16 +86,16 @@ const create = async (req: Request, res: Response) => {
 
   const trackName = req.body?.track_name || null;
 
-  if (!trackUrl) {
-    return res.status(404).json({ errors: errors.GENERIC });
-  }
+  // if (!trackUrl) {
+  //   return res.status(404).json({ errors: errors.GENERIC });
+  // }
 
   const ticketId = getGeneratedId();
   const trackId = getGeneratedId();
   const versionId = getGeneratedId();
   const projectId = req.params.projectId;
 
-  const assignee: string = req.body?.assignee ?? "unassigned"; // user id
+  const assignee: string = req.body?.assignee ?? null; // user id
   const deadline: string =
     req.body?.deadline !== "null" ? req.body?.deadline : null;
   const status: string = req.body?.status ?? "no_status";
@@ -120,16 +121,56 @@ const create = async (req: Request, res: Response) => {
     trackName,
   };
 
-  // console.log(payload, "payload for create ticket");
-  // console.log(trackPayload, "payload for create track");
-
   try {
     // TODO: make this a transaction
     const { data } = await ticketService.create(payload);
 
     await ticketService.createVersion({ id: versionId, ticketId });
 
-    await trackService.create(trackPayload);
+    if (trackUrl) {
+      await trackService.create(trackPayload);
+    }
+
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
+};
+
+// this is used when there is an existing ticket and version but the track is missing
+const uploadTrack = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  // TODO: add bucket implementation
+  // const trackUrl = req.files.track_url || null;
+  // console.log(req.files.track_url, "req.files.track_url");
+
+  const trackId = getGeneratedId();
+  const ticketId = req.params.ticketId;
+  const projectId = req.params.projectId;
+
+  const trackUrl = req.body?.track_url || null;
+  const trackName = req.body?.track_name || null;
+  const versionId = req.body?.version_id ?? null;
+
+  if (!trackUrl || !versionId) {
+    return res.status(404).json({ errors: errors.GENERIC });
+  }
+
+  const trackPayload = {
+    trackId,
+    ticketId,
+    projectId,
+    trackUrl,
+    versionId,
+    trackName,
+  };
+
+  try {
+    const data = await trackService.create(trackPayload);
 
     return res.status(200).json(data);
   } catch (e) {
@@ -302,6 +343,7 @@ export {
   getAll,
   getSingle,
   create,
+  uploadTrack,
   update,
   del,
   getAllVersions,
