@@ -4,7 +4,7 @@ import * as ticketService from "../services/tickets.ts";
 import * as roleService from "../services/roles.ts";
 import * as projectService from "../services/projects.ts";
 import * as trackService from "../services/tracks.ts";
-import { getGeneratedId } from "../utils/index.ts";
+import { getGeneratedId, generateEntityId } from "../utils/index.ts";
 import { CustomError } from "../config/errors.ts";
 
 const getAll = async (req: Request, res: Response) => {
@@ -91,7 +91,7 @@ const create = async (req: Request, res: Response) => {
   // }
 
   const ticketId = getGeneratedId();
-  const trackId = getGeneratedId();
+  const trackId = generateEntityId("track");
   const versionId = getGeneratedId();
   const projectId = req.params.projectId;
 
