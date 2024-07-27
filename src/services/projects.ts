@@ -1,4 +1,4 @@
-import { getGeneratedId } from "../utils/index.ts";
+import { generateEntityId } from "../utils/index.ts";
 import { db } from "../config/db.ts";
 import { errors } from "../constants/index.ts";
 
@@ -66,7 +66,7 @@ export const create = async (
   payload: CreateProjectProps
 ): Promise<{ data: any; error: any }> => {
   const { name, description = "" } = payload;
-  const projectId = getGeneratedId();
+  const projectId = generateEntityId("pr");
 
   if (!name) {
     return {

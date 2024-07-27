@@ -48,14 +48,14 @@ const create = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
 
   // comment body
-  const commentId = generateEntityId("comment");
+  const commentId = generateEntityId("com");
   const trackId = req.body?.track_id || null;
   const ticketVersionId = req.body?.ticket_version_id || null;
   const content = req.body?.content || "";
   const parentCommentId = req.body?.parent_comment_id || null;
 
   // region body
-  const regionId = generateEntityId("region");
+  const regionId = generateEntityId("reg");
   const regionIndex = req.body?.region_index || null;
   const startString = req.body?.start_string || null;
   const endString = req.body?.end_string || null;

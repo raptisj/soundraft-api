@@ -4,7 +4,8 @@ import * as ticketService from "../services/tickets.ts";
 import * as roleService from "../services/roles.ts";
 import * as projectService from "../services/projects.ts";
 import * as trackService from "../services/tracks.ts";
-import { getGeneratedId, generateEntityId } from "../utils/index.ts";
+import * as commentService from "../services/comments.ts";
+import { generateEntityId } from "../utils/index.ts";
 import { CustomError } from "../config/errors.ts";
 
 const getAll = async (req: Request, res: Response) => {
@@ -90,9 +91,9 @@ const create = async (req: Request, res: Response) => {
   //   return res.status(404).json({ errors: errors.GENERIC });
   // }
 
-  const ticketId = getGeneratedId();
-  const trackId = generateEntityId("track");
-  const versionId = getGeneratedId();
+  const ticketId = generateEntityId("pr");
+  const trackId = generateEntityId("tr");
+  const versionId = generateEntityId("tver");
   const projectId = req.params.projectId;
 
   const assignee: string = req.body?.assignee ?? null; // user id
@@ -148,7 +149,7 @@ const uploadTrack = async (req: Request, res: Response) => {
   // const trackUrl = req.files.track_url || null;
   // console.log(req.files.track_url, "req.files.track_url");
 
-  const trackId = getGeneratedId();
+  const trackId = generateEntityId("tr");
   const ticketId = req.params.ticketId;
   const projectId = req.params.projectId;
 
@@ -235,6 +236,7 @@ const del = async (req: Request, res: Response) => {
 
   try {
     const { data } = await ticketService.deleteTicket(ticketId);
+    await commentService.deleteManyComments(ticketId);
 
     return res.status(200).json(data);
   } catch (e) {
@@ -283,7 +285,7 @@ const createVersion = async (req: Request, res: Response) => {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
-  const versionId = getGeneratedId();
+  const versionId = generateEntityId("tver");
   const ticketId = req.params.ticketId;
   const versionName: string = req.body?.version_name ?? "";
   const versionNotes: string = req.body?.notes ?? "";

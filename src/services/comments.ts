@@ -135,3 +135,15 @@ export const deleteRegion = async (id: string) => {
     data: {},
   };
 };
+
+export const deleteManyComments = async (ticketId: string) => {
+  try {
+    await db.query("DELETE FROM comments WHERE ticket_id = $1;", [ticketId]);
+  } catch (error) {
+    throw new Error();
+  }
+
+  return {
+    data: {},
+  };
+};

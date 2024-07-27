@@ -14,12 +14,13 @@ export const getGeneratedId = () => {
  */
 
 type GenerateEntityIdType =
-  | "project"
-  | "ticket"
-  | "ticket_version"
-  | "track"
-  | "comment"
-  | "region";
+  | "pr" // project
+  | "ti" // ticket
+  | "tver" // ticket version
+  | "tr" // track
+  | "com" // comment
+  | "reg" // region
+  | "rol";
 
 export const generateEntityId = (str: GenerateEntityIdType) => {
   const id = uuidv4();
