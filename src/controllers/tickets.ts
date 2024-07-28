@@ -91,9 +91,9 @@ const create = async (req: Request, res: Response) => {
   //   return res.status(404).json({ errors: errors.GENERIC });
   // }
 
-  const ticketId = generateEntityId("pr");
-  const trackId = generateEntityId("tr");
-  const versionId = generateEntityId("tver");
+  const ticketId = generateEntityId("ti");
+  const trackId = generateEntityId("tra");
+  const versionId = generateEntityId("vrs");
   const projectId = req.params.projectId;
 
   const assignee: string = req.body?.assignee ?? null; // user id
@@ -149,7 +149,7 @@ const uploadTrack = async (req: Request, res: Response) => {
   // const trackUrl = req.files.track_url || null;
   // console.log(req.files.track_url, "req.files.track_url");
 
-  const trackId = generateEntityId("tr");
+  const trackId = generateEntityId("tra");
   const ticketId = req.params.ticketId;
   const projectId = req.params.projectId;
 
@@ -285,7 +285,7 @@ const createVersion = async (req: Request, res: Response) => {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
-  const versionId = generateEntityId("tver");
+  const versionId = generateEntityId("vrs");
   const ticketId = req.params.ticketId;
   const versionName: string = req.body?.version_name ?? "";
   const versionNotes: string = req.body?.notes ?? "";

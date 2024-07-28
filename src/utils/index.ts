@@ -14,12 +14,13 @@ export const getGeneratedId = () => {
  */
 
 type GenerateEntityIdType =
-  | "pr" // project
+  | "prj" // project
   | "ti" // ticket
-  | "tver" // ticket version
-  | "tr" // track
+  | "vrs" // ticket version
+  | "tra" // track
   | "com" // comment
   | "reg" // region
+  | "inv" // invitation
   | "rol";
 
 export const generateEntityId = (str: GenerateEntityIdType) => {

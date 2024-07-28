@@ -66,7 +66,7 @@ export const create = async (
   payload: CreateProjectProps
 ): Promise<{ data: any; error: any }> => {
   const { name, description = "" } = payload;
-  const projectId = generateEntityId("pr");
+  const projectId = generateEntityId("prj");
 
   if (!name) {
     return {

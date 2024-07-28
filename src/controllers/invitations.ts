@@ -6,7 +6,7 @@ import * as roleService from "../services/roles.ts";
 import * as invitationService from "../services/invitations.ts";
 import * as authService from "../services/auth.ts";
 import { lucia } from "../config/auth.ts";
-import { getGeneratedId } from "../utils/index.ts";
+import { generateEntityId } from "../utils/index.ts";
 
 const create = async (req: Request, res: Response) => {
   if (!res.locals.user) {
@@ -18,7 +18,7 @@ const create = async (req: Request, res: Response) => {
   const inviteRole = req.body?.invite_role;
   const projectId = req.body?.project_id;
 
-  const invitationId = getGeneratedId();
+  const invitationId = generateEntityId("inv");
 
   const inviteeUserResult = await db.query(
     "SELECT * FROM users WHERE email = $1",
