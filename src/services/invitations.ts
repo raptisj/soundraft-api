@@ -74,7 +74,7 @@ export const get = async (inviteToken: string): Promise<any> => {
 
 export const accept = async (invitationId: string): Promise<any> => {
   await db.query(
-    "UPDATE invitations SET invitation_status = $2 WHERE id = $1 RETURNING *;",
+    "UPDATE invitations SET invitation_status = $2, has_account = TRUE WHERE id = $1 RETURNING *;",
     [invitationId, "accepted"]
   );
 

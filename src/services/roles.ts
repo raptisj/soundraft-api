@@ -51,6 +51,17 @@ export const getRole = async (
   };
 };
 
+export const update = async (roleId: string, role: string): Promise<any> => {
+  const results = await db.query(
+    "UPDATE roles SET role = $2 WHERE id = $1 RETURNING *;",
+    [roleId, role]
+  );
+
+  return {
+    data: results?.rows[0],
+  };
+};
+
 export const isProjectAdmin = async (id: string, userId: string) => {
   try {
     const results = await db.query(
