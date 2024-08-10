@@ -14,6 +14,10 @@ const getAll = async (req: Request, res: Response) => {
   }
 
   const projectId = req.params.projectId;
+  // const projectId = req.body?.project_id || null;
+  // if (!projectId) {
+  //   return res.status(404).json({ errors: errors.GENERIC });
+  // }
 
   try {
     const { data } = await ticketService.getAll(projectId);

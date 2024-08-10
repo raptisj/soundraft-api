@@ -31,6 +31,7 @@ const getAll = async (req: Request, res: Response) => {
       return c;
     });
 
+    // TODO: don't return an array here
     return res.status(200).json(sanitizeResponse);
   } catch (e) {
     console.log(e, "e");

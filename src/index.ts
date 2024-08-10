@@ -14,6 +14,7 @@ import { errorHandler } from "./config/errors.ts";
 const port = process.env.PORT || 4000;
 const app: Application = express();
 
+// TODO: add process.env.CLIENT_APP_URL;
 const corsOptions = {
   origin: "http://localhost:3000",
   credentials: true,
