@@ -54,7 +54,7 @@ export interface DatabaseTicket {
   project_id: string;
   title: string;
   description?: string;
-  ticket_status?: string;
+  ticket_status?: string | null;
   latest_version_id?: string;
   deadline?: Date;
   assignee?: string | null;

@@ -100,10 +100,11 @@ const create = async (req: Request, res: Response) => {
   const versionId = generateEntityId("vrs");
   const projectId = req.params.projectId;
 
-  const assignee: string = req.body?.assignee ?? null; // user id
+  const assignee: string =
+    req.body?.assignee !== "null" ? req.body?.assignee : null;
   const deadline: string =
     req.body?.deadline !== "null" ? req.body?.deadline : null;
-  const status: string = req.body?.status ?? "no_status";
+  const status: string = req.body?.status !== "null" ? req.body?.status : null;
   const title: string = req.body?.title;
   const description: string = req.body?.description ?? "";
 
