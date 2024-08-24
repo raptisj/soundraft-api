@@ -31,8 +31,7 @@ const getAll = async (req: Request, res: Response) => {
       return c;
     });
 
-    // TODO: don't return an array here
-    return res.status(200).json(sanitizeResponse);
+    return res.status(200).json({ comments: sanitizeResponse });
   } catch (e) {
     console.log(e, "e");
     return res.status(404).end();
