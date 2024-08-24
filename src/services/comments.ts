@@ -24,6 +24,7 @@ export const getAll = async (
       ORDER BY c.created_at DESC;`,
     [ticketId, ticketVersionId, trackId]
   );
+  // AND parent_comment_id IS NULL
 
   return {
     data: results?.rows ?? [],
