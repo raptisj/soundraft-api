@@ -14,11 +14,11 @@ router.post(
   commentController.create
 );
 router.put(
-  `"/projects/:projectId/tickets/:ticketId/comments/:commentId`,
+  "/projects/:projectId/tickets/:ticketId/comments/:commentId",
   commentController.update
 );
 router.delete(
-  `"/projects/:projectId/tickets/:ticketId/comments/:commentId`,
+  "/projects/:projectId/tickets/:ticketId/comments/:commentId",
   commentController.del
 );
 
