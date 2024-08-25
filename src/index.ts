@@ -6,6 +6,7 @@ import { router as ticketRouter } from "./router/tickets.ts";
 import { router as invitationRouter } from "./router/invitations.ts";
 import { router as commentRouter } from "./router/comments.ts";
 import { router as roleRouter } from "./router/roles.ts";
+import { router as reactionRouter } from "./router/reactions.ts";
 
 import fileUpload from "express-fileupload";
 import cors from "cors";
@@ -83,6 +84,7 @@ app.use("/", ticketRouter);
 app.use("/", invitationRouter);
 app.use("/", commentRouter);
 app.use("/", roleRouter);
+app.use("/", reactionRouter);
 
 app.use(errorHandler);
 

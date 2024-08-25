@@ -21,6 +21,7 @@ type GenerateEntityIdType =
   | "com" // comment
   | "reg" // region
   | "inv" // invitation
+  | "rct" // reaction
   | "rol";
 
 export const generateEntityId = (str: GenerateEntityIdType) => {

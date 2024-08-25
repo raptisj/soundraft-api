@@ -8,7 +8,6 @@ router.get(
   "/projects/:projectId/tickets/:ticketId/comments",
   commentController.getAll
 );
-// router.get('/tickets/:ticketId/comments, commentController.getAll);
 router.post(
   "/projects/:projectId/tickets/:ticketId/comments",
   commentController.create

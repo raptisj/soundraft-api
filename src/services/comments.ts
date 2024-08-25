@@ -116,6 +116,10 @@ export const deleteComment = async (payload: any) => {
       commentId,
       userId,
     ]);
+
+    await db.query("DELETE FROM comments WHERE parent_comment_id = $1;", [
+      commentId,
+    ]);
   } catch (error) {
     throw new Error();
   }
