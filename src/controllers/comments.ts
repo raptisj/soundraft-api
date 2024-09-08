@@ -91,9 +91,10 @@ const create = async (req: Request, res: Response) => {
     if (error) {
       return res.status(404).json({ errors: error });
     }
-    let response = {
+    const response = {
       ...comment,
       region: null,
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } as any;
 
     if (startInt && endInt) {

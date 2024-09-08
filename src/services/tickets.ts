@@ -149,7 +149,7 @@ export const deleteTicketVersion = async (
     const canDelete = versions.length > 1;
 
     if (canDelete) {
-      await db.query(`DELETE FROM ticket_versions WHERE id = $1;`, [versionId]);
+      await db.query("DELETE FROM ticket_versions WHERE id = $1;", [versionId]);
     } else {
       throw new Error();
     }
