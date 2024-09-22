@@ -30,13 +30,16 @@ const getAll = async (req: Request, res: Response) => {
 };
 
 const getSingle = async (req: Request, res: Response, next: NextFunction) => {
-  if (!res.locals.user) {
-    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
-  }
-
   const ticketId = req.params.ticketId;
   const projectId = req.params.projectId;
   const versionId: any = req.query.version_id;
+
+  // const { data: access } = await ticketService.accessTicket(ticketId);
+  const { data: access } = await projectService.accessProject(projectId);
+
+  if (!res.locals.user && access.access_type === "limited") {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
 
   try {
     const { data: project } = await projectService.getSingle(projectId);

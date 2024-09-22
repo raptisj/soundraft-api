@@ -67,6 +67,23 @@ export const deleteTicket = async (id: string) => {
   };
 };
 
+export const accessTicket = async (id: string) => {
+  const result = await db.query(
+    `SELECT access_type FROM tickets WHERE id = $1;`,
+    [id]
+  );
+
+  let userResult = null;
+  if (result?.rows[0]?.access_type !== "limited") {
+    userResult = await db.query(`SELECT * FROM users WHERE id = $1;`, ["0"]);
+  }
+
+  return {
+    data: result?.rows[0],
+    user: userResult ? userResult.rows[0] : null,
+  };
+};
+
 //////////
 ////////
 ////// ticket versions

@@ -21,10 +21,6 @@ const getAll = async (_: Request, res: Response) => {
 };
 
 const getSingle = async (req: Request, res: Response) => {
-  if (!res.locals.user) {
-    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
-  }
-
   const id = req.params.id;
 
   try {
@@ -80,6 +76,7 @@ const update = async (req: Request, res: Response) => {
     req.body?.project_status ?? projectData.project_status;
   const description: string =
     req.body?.description ?? projectData.description ?? "";
+  const accessType: string = req.body?.access_type ?? projectData.access_type;
 
   try {
     const { data } = await projectService.update(
@@ -87,7 +84,8 @@ const update = async (req: Request, res: Response) => {
       name,
       description,
       projectStatus,
-      userId
+      userId,
+      accessType
     );
 
     return res.status(200).json(data);

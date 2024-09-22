@@ -4,12 +4,12 @@ import * as reactionService from "../services/reactions.ts";
 import { generateEntityId } from "../utils/index.ts";
 
 const getAll = async (req: Request, res: Response) => {
+  const ticketId: any = req.query.ticket_id;
+  const ticketVersionId: any = req.query.ticket_version_id;
+
   if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
-
-  const ticketId: any = req.query.ticket_id;
-  const ticketVersionId: any = req.query.ticket_version_id;
 
   try {
     const { data: reactions } = await reactionService.getAll(

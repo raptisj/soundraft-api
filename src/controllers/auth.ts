@@ -5,6 +5,8 @@ import { errors } from "../constants/index.ts";
 import { isValidEmail, isValidPassword } from "../utils/index.ts";
 import * as authService from "../services/auth.ts";
 import * as userService from "../services/users.ts";
+import * as projectService from "../services/projects.ts";
+// import * as ticketService from "../services/tickets.ts";
 
 const signUp = async (req: Request, res: Response) => {
   try {
@@ -78,13 +80,28 @@ const logout = async (_: Request, res: Response) => {
   return res.status(200).end();
 };
 
-const currentUser = async (_: Request, res: Response) => {
+const currentUser = async (req: Request, res: Response) => {
+  const projectId: any = req.query.project_id;
+  // const ticketId: any = req.query.ticket_id;
+
+  // const { data: access, user } = await ticketService.accessTicket(ticketId);
+  const { data: access, user } = await projectService.accessProject(projectId);
+
+  if (
+    (access?.access_type === "public_edit" ||
+      access?.access_type === "public_read_only") &&
+    !res.locals.user
+  ) {
+    return res.status(200).json({ ...user, access_type: access?.access_type });
+  }
+
   if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
   const userData = {
     ...res.locals.user,
+    access_type: access?.access_type,
   };
 
   return res.status(200).json(userData);
