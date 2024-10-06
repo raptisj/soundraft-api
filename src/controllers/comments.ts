@@ -2,18 +2,19 @@ import { Request, Response } from "express";
 import { errors } from "../constants/index.ts";
 import * as commentService from "../services/comments.ts";
 import * as projectService from "../services/projects.ts";
-// import * as ticketService from "../services/tickets.ts";
 import { generateEntityId } from "../utils/index.ts";
 
 const getAll = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
   const ticketVersionId: any = req.query.ticket_version_id;
   const trackId: any = req.query.track_id;
+  const projectId = req.params.projectId;
 
-  // const { data: access } = await ticketService.accessTicket(ticketId);
-  // if (!res.locals.user) {
-  //   return res.status(401).json({ errors: errors.UNAUTHENTICATED });
-  // }
+  const { data: access } = await projectService.accessProject(projectId);
+
+  if (!res.locals.user && access.access_type === "limited") {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
 
   try {
     const { data: comments, error } = await commentService.getAll(
@@ -45,7 +46,6 @@ const create = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
   const projectId = req.params.projectId;
 
-  // const { data: access } = await ticketService.accessTicket(ticketId);
   const { data: access } = await projectService.accessProject(projectId);
 
   if (!res.locals.user && access.access_type === "limited") {
