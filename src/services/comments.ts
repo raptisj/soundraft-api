@@ -109,13 +109,10 @@ export const updateRegion = async (payload: any): Promise<any> => {
 };
 
 export const deleteComment = async (payload: any) => {
-  const { commentId, userId } = payload;
+  const { commentId } = payload;
 
   try {
-    await db.query("DELETE FROM comments WHERE id = $1 AND user_id = $2;", [
-      commentId,
-      userId,
-    ]);
+    await db.query("DELETE FROM comments WHERE id = $1;", [commentId]);
 
     await db.query("DELETE FROM comments WHERE parent_comment_id = $1;", [
       commentId,

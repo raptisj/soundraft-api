@@ -180,15 +180,11 @@ const del = async (req: Request, res: Response) => {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
-  const userId = res.locals.user.id;
   const commentId = req.params.commentId;
 
   const regionId: any = req.query?.region_id || null;
 
-  const payload = {
-    commentId,
-    userId,
-  };
+  const payload = { commentId };
 
   try {
     if (regionId) {
