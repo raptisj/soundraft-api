@@ -7,6 +7,7 @@ import * as invitationService from "../services/invitations.ts";
 import * as authService from "../services/auth.ts";
 import { lucia } from "../config/auth.ts";
 import { generateEntityId } from "../utils/index.ts";
+import { logger } from "../utils/logger.ts";
 
 const create = async (req: Request, res: Response) => {
   if (!res.locals.user) {
@@ -43,14 +44,16 @@ const create = async (req: Request, res: Response) => {
     project_id: projectId,
   };
 
+  logger.info({ payload }, "create invitation payload");
   try {
     const { data } = await invitationService.create(payload);
+    logger.info({ data }, "send invitation data");
 
     await invitationService.send(data);
 
     return res.status(200).json(data);
   } catch (e) {
-    console.log(e, "e");
+    logger.error({ error: e }, "error in invitation create");
     return res.status(404).end();
   }
 };

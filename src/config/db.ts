@@ -1,5 +1,5 @@
-import * as pg from "pg";
-const { Pool } = pg.default;
+import pg from "pg";
+const { Pool } = pg;
 
 const db = new Pool({
   user: process.env.DATABASE_USER,

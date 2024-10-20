@@ -5,8 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "tsx watch --env-file=.env ./src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch --env-file=.env ./src/index.ts",
+    "start": "NODE_ENV=production tsx ./src/index.ts",
+    "build": "npx rimraf dist && npx tsc",
+    "clean": "rm -rf dist"
   },
   "keywords": [],
   "author": "",
@@ -14,11 +16,14 @@
   "dependencies": {
     "@lucia-auth/adapter-postgresql": "^3.1.2",
     "cors": "^2.8.5",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "express-fileupload": "^1.5.0",
+    "helmet": "^8.0.0",
     "lucia": "^3.1.1",
     "oslo": "^1.2.0",
     "pg": "^8.11.5",
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.3.0",
     "tsx": "^4.7.2",
     "typescript": "^5.4.3",
     "uuid": "^9.0.1"

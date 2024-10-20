@@ -1,10 +1,10 @@
-import { generateId } from "lucia";
-import { Argon2id } from "oslo/password";
-import { isValidEmail, isValidPassword } from "../utils/index.ts";
-import { db } from "../config/db.ts";
-import { errors } from "../constants/index.ts";
-import { lucia } from "../config/auth.ts";
-import { userDTO } from "../dto/index.ts";
+// import { generateId } from "lucia";
+// import { Argon2id } from "oslo/password";
+import { isValidEmail, isValidPassword } from "../utils";
+import { db } from "../config/db";
+import { errors } from "../constants";
+import { argon, lucia, generateUserId } from "../config/auth";
+import { userDTO } from "../dto";
 
 export const signUp = async (
   payload: any
@@ -33,8 +33,9 @@ export const signUp = async (
     };
   }
 
-  const hashedPassword = await new Argon2id().hash(password);
-  const userId = generateId(15);
+  // const hashedPassword = await new Argon2id().hash(password);
+  const hashedPassword = await argon.hash(password);
+  const userId = generateUserId(15);
 
   const results = await db.query(
     "INSERT INTO users (id, email, password, username, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",

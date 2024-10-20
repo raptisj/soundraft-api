@@ -1,4 +1,5 @@
-import { Lucia } from "lucia";
+import { Lucia, generateId as generateUserId } from "lucia";
+import { Argon2id } from "oslo/password";
 import { NodePostgresAdapter } from "@lucia-auth/adapter-postgresql";
 import { db, DatabaseUser } from "./db.ts";
 
@@ -29,3 +30,7 @@ declare module "lucia" {
     DatabaseUserAttributes: Omit<DatabaseUser, "id">;
   }
 }
+
+const argon = new Argon2id();
+
+export { generateUserId, argon };

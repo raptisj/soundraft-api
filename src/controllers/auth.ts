@@ -1,11 +1,12 @@
-import { Argon2id } from "oslo/password";
+// import { Argon2id } from "oslo/password";
 import { Request, Response } from "express";
-import { lucia } from "../config/auth.ts";
+import { argon, lucia } from "../config/auth.ts";
 import { errors } from "../constants/index.ts";
 import { isValidEmail, isValidPassword } from "../utils/index.ts";
 import * as authService from "../services/auth.ts";
 import * as userService from "../services/users.ts";
 import * as projectService from "../services/projects.ts";
+import { logger } from "../utils/logger.ts";
 // import * as ticketService from "../services/tickets.ts";
 
 const signUp = async (req: Request, res: Response) => {
@@ -22,7 +23,8 @@ const signUp = async (req: Request, res: Response) => {
 
     return res.status(201).json({ status: "success" });
   } catch (e) {
-    console.log(e, "e");
+    // console.log(e, "e");
+    logger.error({ error: e }, "error in sign up");
     return res.status(400).json({ errors: errors.GENERIC });
   }
 };
@@ -46,10 +48,13 @@ const login = async (req: Request, res: Response) => {
       return res.status(404).json({ errors: errors.USER_DOES_NOT_EXISTS });
     }
 
-    const validPassword = await new Argon2id().verify(
-      existingUser.password,
-      password
-    );
+    // const validPassword = await new Argon2id().verify(
+    //   existingUser.password,
+    //   password
+    // );
+
+    const validPassword = await argon.verify(existingUser.password, password);
+
     if (!validPassword) {
       return res
         .status(404)
@@ -66,6 +71,7 @@ const login = async (req: Request, res: Response) => {
 
     return res.status(200).json({ status: "success" });
   } catch (error) {
+    logger.error({ error }, "error in sign in");
     return res.status(404).json({ errors: errors.GENERIC, status: "error" });
   }
 };

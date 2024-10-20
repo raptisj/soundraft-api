@@ -1,4 +1,6 @@
 import express, { Application } from "express";
+// import ViteExpress from "vite-express";
+import helmet from "helmet";
 import { lucia } from "./config/auth.ts";
 import { router as authRouter } from "./router/auth.ts";
 import { router as projectRouter } from "./router/projects.ts";
@@ -14,17 +16,27 @@ import { errorHandler } from "./config/errors.ts";
 // import { verifyRequestOrigin } from "lucia";
 
 const port = process.env.PORT || 4000;
+const apiUrl =
+  process.env.NODE_ENV === "development"
+    ? process.env.LOCAL_API_URL
+    : process.env.PROD_API_URL;
+
+console.log(process.env.NODE_ENV, "process.env.NODE_ENV");
 const app: Application = express();
 
 // TODO: add process.env.CLIENT_APP_URL;
+const clientAappUrl = process.env.CLIENT_APP_URL;
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: clientAappUrl,
+  // origin: "http://localhost:3000",
   credentials: true,
 };
 
+app.use(helmet());
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
+app.use(errorHandler);
 
 // app.use((req, res, next) => {
 //   if (req.method === "GET") {
@@ -86,9 +98,18 @@ app.use("/", commentRouter);
 app.use("/", roleRouter);
 app.use("/", reactionRouter);
 
-app.use(errorHandler);
-
 app.listen(port, async () => {
-  console.log(`Musaik app listening at http://localhost:${port}`);
+  console.log(`Soundraft api listening at ${apiUrl}`);
+  // console.log(`Soundraft api listening at http://localhost:${port}`);
   // await lucia.deleteExpiredSessions();
+});
+
+process.on("uncaughtException", (error: any) => {
+  console.error(error, "global uncaughtException");
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (error: any) => {
+  console.error(error, "global unhandledRejection");
+  process.exit(1);
 });

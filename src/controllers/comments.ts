@@ -3,6 +3,7 @@ import { errors } from "../constants/index.ts";
 import * as commentService from "../services/comments.ts";
 import * as projectService from "../services/projects.ts";
 import { generateEntityId } from "../utils/index.ts";
+import { logger } from "../utils/logger.ts";
 
 const getAll = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
@@ -37,7 +38,7 @@ const getAll = async (req: Request, res: Response) => {
 
     return res.status(200).json({ comments: sanitizeResponse });
   } catch (e) {
-    console.log(e, "e");
+    logger.error({ error: e }, "error in fetching all comments");
     return res.status(404).end();
   }
 };
@@ -111,7 +112,7 @@ const create = async (req: Request, res: Response) => {
 
     return res.status(200).json(response);
   } catch (e) {
-    console.log(e, "e");
+    logger.error({ error: e }, "error in creating comment");
     return res.status(404).end();
   }
 };
@@ -170,7 +171,7 @@ const update = async (req: Request, res: Response) => {
 
     return res.status(200).json(response);
   } catch (e) {
-    console.log(e, "e");
+    logger.error({ error: e }, "error in updating comment");
     return res.status(404).end();
   }
 };
@@ -193,7 +194,7 @@ const del = async (req: Request, res: Response) => {
     await commentService.deleteComment(payload);
     return res.status(200).json({});
   } catch (e) {
-    console.log(e, "e");
+    logger.error({ error: e }, "error in deleting comment");
     return res.status(404).end();
   }
 };
