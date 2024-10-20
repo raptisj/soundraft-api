@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { errors } from "../constants/index.ts";
-import * as projectService from "../services/projects.ts";
-import * as roleService from "../services/roles.ts";
-import * as ticketService from "../services/tickets.ts";
+import { errors } from "../constants";
+import * as projectService from "../services/projects";
+import * as roleService from "../services/roles";
+import * as ticketService from "../services/tickets";
 
 const getAll = async (_: Request, res: Response) => {
   if (!res.locals.user) {

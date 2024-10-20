@@ -1,18 +1,18 @@
 import express, { Application } from "express";
 // import ViteExpress from "vite-express";
 import helmet from "helmet";
-import { lucia } from "./config/auth.ts";
-import { router as authRouter } from "./router/auth.ts";
-import { router as projectRouter } from "./router/projects.ts";
-import { router as ticketRouter } from "./router/tickets.ts";
-import { router as invitationRouter } from "./router/invitations.ts";
-import { router as commentRouter } from "./router/comments.ts";
-import { router as roleRouter } from "./router/roles.ts";
-import { router as reactionRouter } from "./router/reactions.ts";
+import { lucia } from "./config/auth";
+import { router as authRouter } from "./router/auth";
+import { router as projectRouter } from "./router/projects";
+import { router as ticketRouter } from "./router/tickets";
+import { router as invitationRouter } from "./router/invitations";
+import { router as commentRouter } from "./router/comments";
+import { router as roleRouter } from "./router/roles";
+import { router as reactionRouter } from "./router/reactions";
 
 import fileUpload from "express-fileupload";
 import cors from "cors";
-import { errorHandler } from "./config/errors.ts";
+import { errorHandler } from "./config/errors";
 // import { verifyRequestOrigin } from "lucia";
 
 const port = process.env.PORT || 4000;

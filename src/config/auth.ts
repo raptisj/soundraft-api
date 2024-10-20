@@ -1,7 +1,7 @@
 import { Lucia, generateId as generateUserId } from "lucia";
 import { Argon2id } from "oslo/password";
 import { NodePostgresAdapter } from "@lucia-auth/adapter-postgresql";
-import { db, DatabaseUser } from "./db.ts";
+import { db, DatabaseUser } from "./db";
 
 const adapter = new NodePostgresAdapter(db, {
   user: "users",

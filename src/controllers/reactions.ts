@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { errors } from "../constants/index.ts";
-import * as reactionService from "../services/reactions.ts";
-import { generateEntityId } from "../utils/index.ts";
+import { errors } from "../constants";
+import * as reactionService from "../services/reactions";
+import { generateEntityId } from "../utils";
 
 const getAll = async (req: Request, res: Response) => {
   const ticketId: any = req.query.ticket_id;

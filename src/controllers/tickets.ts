@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { errors } from "../constants/index.ts";
-import * as ticketService from "../services/tickets.ts";
-import * as roleService from "../services/roles.ts";
-import * as projectService from "../services/projects.ts";
-import * as trackService from "../services/tracks.ts";
-import * as commentService from "../services/comments.ts";
-import { generateEntityId } from "../utils/index.ts";
-import { CustomError } from "../config/errors.ts";
+import { errors } from "../constants";
+import * as ticketService from "../services/tickets";
+import * as roleService from "../services/roles";
+import * as projectService from "../services/projects";
+import * as trackService from "../services/tracks";
+import * as commentService from "../services/comments";
+import { generateEntityId } from "../utils";
+import { CustomError } from "../config/errors";
 
 const getAll = async (req: Request, res: Response) => {
   if (!res.locals.user) {

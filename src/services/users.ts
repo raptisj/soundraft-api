@@ -1,5 +1,5 @@
-import { userDTO } from "../dto/index.ts";
-import { db, DatabaseUser } from "../config/db.ts";
+import { userDTO } from "../dto";
+import { db, DatabaseUser } from "../config/db";
 
 export const getByEmail = async (email: string) => {
   const result = await db.query("SELECT * FROM users WHERE email = $1", [

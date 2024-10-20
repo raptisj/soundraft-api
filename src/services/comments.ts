@@ -1,4 +1,4 @@
-import { db } from "../config/db.ts";
+import { db } from "../config/db";
 
 export const getAll = async (
   ticketId: string,

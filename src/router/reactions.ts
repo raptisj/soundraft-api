@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as reactionController from "../controllers/reactions.ts";
+import * as reactionController from "../controllers/reactions";
 
 const router = express.Router();
 

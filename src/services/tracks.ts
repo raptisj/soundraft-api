@@ -1,4 +1,4 @@
-import { db } from "../config/db.ts";
+import { db } from "../config/db";
 
 export const getSingle = async (ticket_id: string, version_id: string) => {
   const results = await db.query(

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { errors } from "../constants/index.ts";
-import * as commentService from "../services/comments.ts";
-import * as projectService from "../services/projects.ts";
-import { generateEntityId } from "../utils/index.ts";
-import { logger } from "../utils/logger.ts";
+import { errors } from "../constants";
+import * as commentService from "../services/comments";
+import * as projectService from "../services/projects";
+import { generateEntityId } from "../utils";
+import { logger } from "../utils/logger";
 
 const getAll = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;

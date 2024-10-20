@@ -59,13 +59,13 @@
 
 {
   "compilerOptions": {
-    "alwaysStrict": false,
+    // "alwaysStrict": false,
     // "declaration": true,
     // "declarationMap": false,
     "skipLibCheck": true,
     // "downlevelIteration": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
+    // "allowImportingTsExtensions": true,
+    // "noEmit": true,
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",

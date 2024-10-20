@@ -1,12 +1,12 @@
 // import { Argon2id } from "oslo/password";
 import { Request, Response } from "express";
-import { argon, lucia } from "../config/auth.ts";
-import { errors } from "../constants/index.ts";
-import { isValidEmail, isValidPassword } from "../utils/index.ts";
-import * as authService from "../services/auth.ts";
-import * as userService from "../services/users.ts";
-import * as projectService from "../services/projects.ts";
-import { logger } from "../utils/logger.ts";
+import { argon, lucia } from "../config/auth";
+import { errors } from "../constants";
+import { isValidEmail, isValidPassword } from "../utils";
+import * as authService from "../services/auth";
+import * as userService from "../services/users";
+import * as projectService from "../services/projects";
+import { logger } from "../utils/logger";
 // import * as ticketService from "../services/tickets.ts";
 
 const signUp = async (req: Request, res: Response) => {

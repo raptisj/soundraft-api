@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import { db, DatabaseUser } from "../config/db.ts";
-import { CustomError } from "../config/errors.ts";
-import { errors } from "../constants/index.ts";
-import * as roleService from "../services/roles.ts";
-import * as invitationService from "../services/invitations.ts";
-import * as authService from "../services/auth.ts";
-import { lucia } from "../config/auth.ts";
-import { generateEntityId } from "../utils/index.ts";
-import { logger } from "../utils/logger.ts";
+import { db, DatabaseUser } from "../config/db";
+import { CustomError } from "../config/errors";
+import { errors } from "../constants";
+import * as roleService from "../services/roles";
+import * as invitationService from "../services/invitations";
+import * as authService from "../services/auth";
+import { lucia } from "../config/auth";
+import { generateEntityId } from "../utils";
+import { logger } from "../utils/logger";
 
 const create = async (req: Request, res: Response) => {
   if (!res.locals.user) {

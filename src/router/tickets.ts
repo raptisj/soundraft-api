@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as ticketController from "../controllers/tickets.ts";
+import * as ticketController from "../controllers/tickets";
 
 const TICKETS_ENDPOINT = "/projects/:projectId/tickets";
 const TICKETS_ENDPOINT_ID = `${TICKETS_ENDPOINT}/:ticketId`;

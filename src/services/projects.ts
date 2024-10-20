@@ -1,6 +1,6 @@
-import { generateEntityId } from "../utils/index.ts";
-import { db } from "../config/db.ts";
-import { errors } from "../constants/index.ts";
+import { generateEntityId } from "../utils";
+import { db } from "../config/db";
+import { errors } from "../constants";
 
 export const getAll = async (userId: string): Promise<any> => {
   const results = await db.query(

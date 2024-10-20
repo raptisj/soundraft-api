@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as invitationController from "../controllers/invitations.ts";
+import * as invitationController from "../controllers/invitations";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
-import { generateEntityId } from "../utils/index.ts";
-import { db } from "../config/db.ts";
+import { generateEntityId } from "../utils";
+import { db } from "../config/db";
 
 export const createRole = async (
   role: string,

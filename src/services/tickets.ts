@@ -1,6 +1,6 @@
-import { CustomError } from "../config/errors.ts";
-import { db } from "../config/db.ts";
-import { errors } from "../constants/index.ts";
+import { CustomError } from "../config/errors";
+import { db } from "../config/db";
+import { errors } from "../constants";
 
 export const getAll = async (projectId: string) => {
   const results = await db.query(
