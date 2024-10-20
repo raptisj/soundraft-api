@@ -7,6 +7,7 @@ const db = new Pool({
   database: process.env.DATABASE_NAME,
   password: process.env.DATABASE_PASSWORD,
   port: Number(process.env.DATABASE_PORT),
+  ssl: Boolean(process.env.DATABASE_SSL === "true"),
 });
 
 export { db };
