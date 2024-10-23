@@ -42,6 +42,10 @@ export const signUp = async (
     [userId, email, hashedPassword, username, first_name, last_name]
   );
 
+  // const token = cookies.get("session");
+
+  //   const token = await generateSessionToken();
+  // const session = await createSession(token, userId);
   const session = await lucia.createSession(userId, {});
 
   return {

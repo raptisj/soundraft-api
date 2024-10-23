@@ -9,6 +9,7 @@ import { router as invitationRouter } from "./router/invitations";
 import { router as commentRouter } from "./router/comments";
 import { router as roleRouter } from "./router/roles";
 import { router as reactionRouter } from "./router/reactions";
+import Cookies from "cookies";
 
 import fileUpload from "express-fileupload";
 import cors from "cors";
@@ -63,6 +64,9 @@ app.use(errorHandler);
 app.use(async (req, res, next) => {
   const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
 
+  const cookies = new Cookies(req, res, {});
+  const token = cookies.get("session");
+  console.log(token, "token");
   if (!sessionId) {
     res.locals.user = null;
     res.locals.session = null;
