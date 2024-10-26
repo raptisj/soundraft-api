@@ -28,8 +28,8 @@ const app: Application = express();
 // TODO: add process.env.CLIENT_APP_URL;
 const clientAappUrl = process.env.CLIENT_APP_URL;
 const corsOptions = {
-  origin: clientAappUrl,
-  // origin: "http://localhost:3000",
+  // origin: clientAappUrl,
+  origin: ["http://localhost:3000", "http://localhost:4173"],
   credentials: true,
 };
 
@@ -65,7 +65,7 @@ app.use(async (req, res, next) => {
   const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
 
   const cookies = new Cookies(req, res, {});
-  const token = cookies.get("session");
+  const token = cookies.get("auth_session");
   console.log(token, "token");
   if (!sessionId) {
     res.locals.user = null;
