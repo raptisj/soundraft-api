@@ -1,29 +1,30 @@
-// import { Argon2id } from "oslo/password";
-import { Request, Response } from "express";
-import { argon, lucia } from "../config/auth";
-import { errors } from "../constants";
+import type { Request, Response } from "express";
+import {
+  argon,
+  generateSessionToken,
+  createSession,
+  invalidateSession,
+} from "../config/auth";
+import { COOKIE_KEY, errors } from "../constants";
 import { isValidEmail, isValidPassword } from "../utils";
 import * as authService from "../services/auth";
 import * as userService from "../services/users";
 import * as projectService from "../services/projects";
 import { logger } from "../utils/logger";
+import Cookies from "cookies";
 // import * as ticketService from "../services/tickets.ts";
 
 const signUp = async (req: Request, res: Response) => {
   try {
-    const { session, error } = await authService.signUp(req.body);
+    const { error, token } = await authService.signUp(req.body);
     if (error) {
       return res.status(404).json({ errors: error });
     }
 
-    res.appendHeader(
-      "Set-Cookie",
-      lucia.createSessionCookie(session.id).serialize()
-    );
-
+    const cookies = new Cookies(req, res, {});
+    cookies.set(COOKIE_KEY, token);
     return res.status(201).json({ status: "success" });
   } catch (e) {
-    // console.log(e, "e");
     logger.error({ error: e }, "error in sign up");
     return res.status(400).json({ errors: errors.GENERIC });
   }
@@ -48,11 +49,6 @@ const login = async (req: Request, res: Response) => {
       return res.status(404).json({ errors: errors.USER_DOES_NOT_EXISTS });
     }
 
-    // const validPassword = await new Argon2id().verify(
-    //   existingUser.password,
-    //   password
-    // );
-
     const validPassword = await argon.verify(existingUser.password, password);
 
     if (!validPassword) {
@@ -61,13 +57,13 @@ const login = async (req: Request, res: Response) => {
         .json({ errors: errors.INCORRECT_PASSWORD, status: "error" });
     }
 
-    const session = await lucia.createSession(existingUser.id, {});
-    res
-      .appendHeader(
-        "Set-Cookie",
-        lucia.createSessionCookie(session.id).serialize()
-      )
-      .appendHeader("Location", "/");
+    const token = generateSessionToken();
+    await createSession(token, existingUser.id);
+
+    const cookies = new Cookies(req, res, {});
+    cookies.set(COOKIE_KEY, token);
+
+    res.appendHeader("Location", "/");
 
     return res.status(200).json({ status: "success" });
   } catch (error) {
@@ -76,18 +72,21 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-const logout = async (_: Request, res: Response) => {
+const logout = async (req: Request, res: Response) => {
   if (!res.locals.session) {
     return res.status(401).end();
   }
 
-  await lucia.invalidateSession(res.locals.session.id);
-  res.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize());
+  await invalidateSession(res.locals.session.id);
+
+  const cookies = new Cookies(req, res, {});
+  cookies.set(COOKIE_KEY, null);
+
   return res.status(200).end();
 };
 
 const currentUser = async (req: Request, res: Response) => {
-  const projectId: any = req.query.project_id;
+  const projectId = req.query.project_id as string;
   // const ticketId: any = req.query.ticket_id;
 
   // const { data: access, user } = await ticketService.accessTicket(ticketId);

@@ -1,7 +1,6 @@
-import express, { Application } from "express";
-// import ViteExpress from "vite-express";
+import express, { type Application } from "express";
 import helmet from "helmet";
-import { lucia } from "./config/auth";
+import { validateSessionToken } from "./config/auth";
 import { router as authRouter } from "./router/auth";
 import { router as projectRouter } from "./router/projects";
 import { router as ticketRouter } from "./router/tickets";
@@ -14,7 +13,7 @@ import Cookies from "cookies";
 import fileUpload from "express-fileupload";
 import cors from "cors";
 import { errorHandler } from "./config/errors";
-// import { verifyRequestOrigin } from "lucia";
+import { COOKIE_KEY } from "./constants";
 
 const port = process.env.PORT || 4000;
 const apiUrl =
@@ -25,11 +24,17 @@ const apiUrl =
 console.log(process.env.NODE_ENV, "process.env.NODE_ENV");
 const app: Application = express();
 
-// TODO: add process.env.CLIENT_APP_URL;
-const clientAappUrl = process.env.CLIENT_APP_URL;
+const whitelistOrigins = [
+  "http://localhost:3000",
+  "http://localhost:4173",
+  "https://soundraft-ui-t9r8z.ondigitalocean.app",
+];
+
 const corsOptions = {
-  // origin: clientAappUrl,
-  origin: ["http://localhost:3000", "http://localhost:4173"],
+  origin:
+    process.env.NODE_ENV === "development"
+      ? ["http://localhost:3000", "http://localhost:4173"]
+      : [...whitelistOrigins, "https://soundraft-ui-t9r8z.ondigitalocean.app"],
   credentials: true,
 };
 
@@ -62,31 +67,23 @@ app.use(errorHandler);
 // });
 
 app.use(async (req, res, next) => {
-  const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
-
   const cookies = new Cookies(req, res, {});
-  const token = cookies.get("auth_session");
-  console.log(token, "token");
-  if (!sessionId) {
+  const token = cookies.get(COOKIE_KEY);
+
+  if (!token) {
     res.locals.user = null;
     res.locals.session = null;
 
     return next();
   }
 
-  const { session, user } = await lucia.validateSession(sessionId);
-  if (session && session.fresh) {
-    res.appendHeader(
-      "Set-Cookie",
-      lucia.createSessionCookie(session.id).serialize()
-    );
+  const { session, user } = await validateSessionToken(token);
+  if (session?.fresh) {
+    cookies.set(COOKIE_KEY, token);
   }
 
   if (!session) {
-    res.appendHeader(
-      "Set-Cookie",
-      lucia.createBlankSessionCookie().serialize()
-    );
+    cookies.set(COOKIE_KEY, null);
   }
   res.locals.session = session;
   res.locals.user = user;
@@ -104,16 +101,15 @@ app.use("/", reactionRouter);
 
 app.listen(port, async () => {
   console.log(`Soundraft api listening at ${apiUrl}`);
-  // console.log(`Soundraft api listening at http://localhost:${port}`);
-  // await lucia.deleteExpiredSessions();
+  // TODO: delete expired sessions
 });
 
-process.on("uncaughtException", (error: any) => {
+process.on("uncaughtException", (error: Error) => {
   console.error(error, "global uncaughtException");
   process.exit(1);
 });
 
-process.on("unhandledRejection", (error: any) => {
+process.on("unhandledRejection", (error: Error) => {
   console.error(error, "global unhandledRejection");
   process.exit(1);
 });

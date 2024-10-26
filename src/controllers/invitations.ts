@@ -1,13 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { db, DatabaseUser } from "../config/db";
+import type { Request, Response, NextFunction } from "express";
+import { db, type DatabaseUser } from "../config/db";
 import { CustomError } from "../config/errors";
-import { errors } from "../constants";
+import { COOKIE_KEY, errors } from "../constants";
 import * as roleService from "../services/roles";
 import * as invitationService from "../services/invitations";
 import * as authService from "../services/auth";
-import { lucia } from "../config/auth";
 import { generateEntityId } from "../utils";
 import { logger } from "../utils/logger";
+import Cookies from "cookies";
 
 const create = async (req: Request, res: Response) => {
   if (!res.locals.user) {
@@ -88,7 +88,12 @@ const accept = async (req: Request, res: Response) => {
 
   if (!invitation.has_account) {
     try {
-      const { session, error, data: user } = await authService.signUp(req.body);
+      const {
+        session,
+        token,
+        error,
+        data: user,
+      } = await authService.signUp(req.body);
       if (error) {
         return res.status(404).json({ errors: error });
       }
@@ -97,10 +102,8 @@ const accept = async (req: Request, res: Response) => {
 
       await roleService.createRole(invitation.role, user.id, projectId);
 
-      res.appendHeader(
-        "Set-Cookie",
-        lucia.createSessionCookie(session.id).serialize()
-      );
+      const cookies = new Cookies(req, res, {});
+      cookies.set(COOKIE_KEY, token);
 
       return res.status(201).json({ status: "success" });
     } catch (e) {

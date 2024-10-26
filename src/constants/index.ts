@@ -50,3 +50,5 @@ export const errors = {
     status_code: 404,
   },
 };
+
+export const COOKIE_KEY = "auth_session";

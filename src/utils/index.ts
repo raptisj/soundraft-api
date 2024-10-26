@@ -22,7 +22,8 @@ type GenerateEntityIdType =
   | "reg" // region
   | "inv" // invitation
   | "rct" // reaction
-  | "rol";
+  | "rol" // role
+  | "usr"; // user
 
 export const generateEntityId = (str: GenerateEntityIdType) => {
   const id = uuidv4();
