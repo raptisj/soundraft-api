@@ -19,6 +19,23 @@ const create = async (req: Request, res: Response) => {
   const inviteRole = req.body?.invite_role;
   const projectId = req.body?.project_id;
 
+  // const regex = /\+[^@]*@/; // remove all characters between the + and the @
+
+  // // const email = "johndoe+yo@example.com";
+  // const newEmail = inviteEmail.replace(regex, "@");
+
+  const invitationExistsResult = await db.query(
+    "SELECT * FROM invitations WHERE invite_email = $1",
+    [inviteEmail]
+  );
+
+  const invitationExists = invitationExistsResult?.rows[0];
+
+  if (invitationExists) {
+    console.log("invitation exists");
+    return res.status(404).json({ errors: errors.INVITATION_ALREADY_SENT });
+  }
+
   const invitationId = generateEntityId("inv");
 
   const inviteeUserResult = await db.query(
@@ -88,12 +105,7 @@ const accept = async (req: Request, res: Response) => {
 
   if (!invitation.has_account) {
     try {
-      const {
-        session,
-        token,
-        error,
-        data: user,
-      } = await authService.signUp(req.body);
+      const { token, error, data: user } = await authService.signUp(req.body);
       if (error) {
         return res.status(404).json({ errors: error });
       }

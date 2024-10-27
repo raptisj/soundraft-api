@@ -49,6 +49,10 @@ export const errors = {
     error_code: "resource_does_not_exists",
     status_code: 404,
   },
+  INVITATION_ALREADY_SENT: {
+    message: "Invitation already sent",
+    error_code: "invitation_already_sent",
+  },
 };
 
 export const COOKIE_KEY = "auth_session";
