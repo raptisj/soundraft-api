@@ -116,7 +116,7 @@ export const update = async (
 
 export const deleteProject = async (id: string) => {
   try {
-    await db.query(`DELETE FROM projects WHERE id = $1;`, [id]);
+    await db.query("DELETE FROM projects WHERE id = $1;", [id]);
   } catch (error) {
     throw new Error();
   }
@@ -128,13 +128,13 @@ export const deleteProject = async (id: string) => {
 
 export const accessProject = async (id: string) => {
   const result = await db.query(
-    `SELECT access_type FROM projects WHERE id = $1;`,
+    "SELECT access_type FROM projects WHERE id = $1;",
     [id]
   );
 
   let userResult = null;
   if (result?.rows[0]?.access_type !== "limited") {
-    userResult = await db.query(`SELECT * FROM users WHERE id = $1;`, ["0"]);
+    userResult = await db.query("SELECT * FROM users WHERE id = $1;", ["0"]);
   }
 
   return {

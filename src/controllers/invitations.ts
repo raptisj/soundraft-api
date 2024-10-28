@@ -25,8 +25,8 @@ const create = async (req: Request, res: Response) => {
   // const newEmail = inviteEmail.replace(regex, "@");
 
   const invitationExistsResult = await db.query(
-    "SELECT * FROM invitations WHERE invite_email = $1",
-    [inviteEmail]
+    "SELECT * FROM invitations WHERE invited_email = $1 AND project_id = $2",
+    [inviteEmail, projectId]
   );
 
   const invitationExists = invitationExistsResult?.rows[0];
@@ -143,4 +143,35 @@ const accept = async (req: Request, res: Response) => {
   }
 };
 
-export { create, accept, getPublic };
+const getList = async (req: Request, res: Response, next: NextFunction) => {
+  const projectId = req.query.project_id as string;
+
+  try {
+    const { data } = await invitationService.getList(projectId);
+
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
+};
+
+const revoke = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const invitationId = req.params.invitationId;
+
+  try {
+    const { data } = await invitationService.revoke(invitationId);
+
+    logger.info({ data }, "invitation revoked");
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
+};
+
+export { create, accept, getPublic, getList, revoke };

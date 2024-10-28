@@ -80,3 +80,26 @@ export const accept = async (invitationId: string): Promise<any> => {
 
   return {};
 };
+
+export const getList = async (projectId: string): Promise<any> => {
+  const results = await db.query(
+    "SELECT * FROM invitations WHERE project_id = $1 AND invitation_status = $2;",
+    [projectId, "pending"]
+  );
+
+  return {
+    data: results?.rows,
+  };
+};
+
+export const revoke = async (id: string) => {
+  try {
+    await db.query("DELETE FROM invitations WHERE id = $1;", [id]);
+  } catch (error) {
+    throw new Error();
+  }
+
+  return {
+    data: {},
+  };
+};

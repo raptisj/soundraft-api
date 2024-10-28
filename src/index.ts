@@ -28,6 +28,7 @@ const whitelistOrigins = [
   "http://localhost:3000",
   "http://localhost:4173",
   "https://soundraft-ui-t9r8z.ondigitalocean.app",
+  "https://app.soundraft.app",
 ];
 
 const corsOptions = {
