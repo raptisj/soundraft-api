@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { errors } from "../constants";
 import * as ticketService from "../services/tickets";
 import * as roleService from "../services/roles";
@@ -32,7 +32,7 @@ const getAll = async (req: Request, res: Response) => {
 const getSingle = async (req: Request, res: Response, next: NextFunction) => {
   const ticketId = req.params.ticketId;
   const projectId = req.params.projectId;
-  const versionId: any = req.query.version_id;
+  const versionId = req.query.version_id as string;
 
   // const { data: access } = await ticketService.accessTicket(ticketId);
   const { data: access } = await projectService.accessProject(projectId);
@@ -338,7 +338,7 @@ const deleteVersion = async (req: Request, res: Response) => {
   } catch (e) {
     console.log(e, "e");
 
-    let error;
+    let error: { message: string; error_code: string };
     if (e instanceof CustomError) {
       error = { message: e.message, error_code: e.error_code };
     } else {

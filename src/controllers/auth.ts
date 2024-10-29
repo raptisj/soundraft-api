@@ -6,20 +6,98 @@ import {
   invalidateSession,
 } from "../config/auth";
 import { COOKIE_KEY, errors } from "../constants";
-import { isValidEmail, isValidPassword } from "../utils";
+import { generateEntityId, isValidEmail, isValidPassword } from "../utils";
 import * as authService from "../services/auth";
 import * as userService from "../services/users";
 import * as projectService from "../services/projects";
+import * as ticketService from "../services/tickets";
+import * as roleService from "../services/roles";
+import * as trackService from "../services/tracks";
+import * as commentService from "../services/comments";
 import { logger } from "../utils/logger";
 import Cookies from "cookies";
-// import * as ticketService from "../services/tickets.ts";
+
+const createDefaultProjectAndTicket = async (userId: string) => {
+  const { data: project } = await projectService.create({
+    name: "First project",
+    description: "This is an important project",
+  });
+
+  await roleService.createRole("admin", userId, project.id);
+
+  const ticketId = generateEntityId("ti");
+  const trackId = generateEntityId("tra");
+  const versionId = generateEntityId("vrs");
+
+  const currentDate = new Date();
+  currentDate.setMonth(currentDate.getMonth() + 1);
+
+  const payload = {
+    ticketId,
+    projectId: project.id,
+    assignee: null,
+    deadline: currentDate,
+    status: "todo",
+    title: "First ticket",
+    description: "This is my cool ticket",
+  };
+
+  const trackUrl =
+    "https://tqewfwkenyvqfshhzpyu.supabase.co/storage/v1/object/public/musaik/627981_outfoxing.mp3";
+
+  const trackPayload = {
+    trackId,
+    ticketId,
+    projectId: project.id,
+    trackUrl,
+    versionId,
+    trackName: "627981_outfoxing.mp3",
+  };
+
+  await ticketService.create(payload);
+
+  await ticketService.createVersion({ id: versionId, ticketId });
+
+  if (trackUrl) {
+    await trackService.create(trackPayload);
+  }
+
+  const commentId = generateEntityId("com");
+  const regionId = generateEntityId("reg");
+
+  const commentPayload = {
+    commentId,
+    ticketId,
+    userId,
+    trackId,
+    ticketVersionId: versionId,
+    content: "this is quite loud!",
+    parentCommentId: null,
+  };
+
+  const regionPayload = {
+    regionId,
+    commentId,
+    regionIndex: 2,
+    startString: "0:10",
+    endString: "0:19",
+    startInt: 9.87477,
+    endInt: 19.30192,
+  };
+
+  await commentService.create(commentPayload);
+
+  await commentService.createRegion(regionPayload);
+};
 
 const signUp = async (req: Request, res: Response) => {
   try {
-    const { error, token } = await authService.signUp(req.body);
+    const { data, error, token } = await authService.signUp(req.body);
     if (error) {
       return res.status(404).json({ errors: error });
     }
+
+    await createDefaultProjectAndTicket(data.id);
 
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token);
