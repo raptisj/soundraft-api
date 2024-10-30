@@ -38,8 +38,8 @@ const createDefaultProjectAndTicket = async (userId: string) => {
     assignee: null,
     deadline: currentDate,
     status: "todo",
-    title: "First ticket",
-    description: "This is my cool ticket",
+    title: "First draft",
+    description: "This is my cool draft",
   };
 
   const trackUrl =

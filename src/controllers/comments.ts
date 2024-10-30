@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { errors } from "../constants";
 import * as commentService from "../services/comments";
 import * as projectService from "../services/projects";
