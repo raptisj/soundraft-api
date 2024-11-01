@@ -40,6 +40,8 @@ const corsOptions = {
 };
 
 // app.use(helmet());
+
+app.set("trust proxy", true);
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
