@@ -58,9 +58,9 @@ const createDefaultProjectAndTicket = async (userId: string) => {
 
   await ticketService.createVersion({ id: versionId, ticketId });
 
-  if (trackUrl) {
-    await trackService.create(trackPayload);
-  }
+  // if (trackUrl) {
+  await trackService.create(trackPayload);
+  // }
 
   const commentId = generateEntityId("com");
   const regionId = generateEntityId("reg");

@@ -39,7 +39,7 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(helmet());
+// app.use(helmet());
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
