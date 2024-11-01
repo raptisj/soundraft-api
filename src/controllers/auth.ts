@@ -140,7 +140,7 @@ const login = async (req: Request, res: Response) => {
 
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token, {
-      sameSite: "none",
+      // sameSite: "none",
       secure: process.env.NODE_ENV === "production",
     });
 
