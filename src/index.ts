@@ -39,8 +39,7 @@ const corsOptions = {
   credentials: true,
 };
 
-// app.use(helmet());
-
+app.use(helmet());
 app.set("trust proxy", true);
 app.use(express.json());
 app.use(cors(corsOptions));

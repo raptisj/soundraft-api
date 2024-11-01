@@ -115,7 +115,9 @@ const accept = async (req: Request, res: Response) => {
       await roleService.createRole(invitation.role, user.id, projectId);
 
       const cookies = new Cookies(req, res, {});
-      cookies.set(COOKIE_KEY, token);
+      cookies.set(COOKIE_KEY, token, {
+        secure: process.env.NODE_ENV === "production",
+      });
 
       return res.status(201).json({ status: "success" });
     } catch (e) {

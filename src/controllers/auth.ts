@@ -100,7 +100,9 @@ const signUp = async (req: Request, res: Response) => {
     await createDefaultProjectAndTicket(data.id);
 
     const cookies = new Cookies(req, res, {});
-    cookies.set(COOKIE_KEY, token);
+    cookies.set(COOKIE_KEY, token, {
+      secure: process.env.NODE_ENV === "production",
+    });
     return res.status(201).json({ status: "success" });
   } catch (e) {
     logger.error({ error: e }, "error in sign up");
@@ -136,18 +138,14 @@ const login = async (req: Request, res: Response) => {
     }
 
     const token = generateSessionToken();
-    console.log(token, "token");
     await createSession(token, existingUser.id);
 
-    console.log("one");
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token, {
-      // sameSite: "none",
       secure: process.env.NODE_ENV === "production",
     });
 
-    console.log("two");
-    // res.appendHeader("Location", "/");
+    res.appendHeader("Location", "/");
 
     return res.status(200).json({ status: "success" });
   } catch (error) {
@@ -165,7 +163,9 @@ const logout = async (req: Request, res: Response) => {
   await invalidateSession(res.locals.session.id);
 
   const cookies = new Cookies(req, res, {});
-  cookies.set(COOKIE_KEY, null);
+  cookies.set(COOKIE_KEY, null, {
+    secure: process.env.NODE_ENV === "production",
+  });
 
   return res.status(200).end();
 };
