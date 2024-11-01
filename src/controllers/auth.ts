@@ -139,7 +139,7 @@ const login = async (req: Request, res: Response) => {
     await createSession(token, existingUser.id);
 
     const cookies = new Cookies(req, res, {});
-    cookies.set(COOKIE_KEY, token);
+    cookies.set(COOKIE_KEY, token, { sameSite: "none" });
 
     res.appendHeader("Location", "/");
 

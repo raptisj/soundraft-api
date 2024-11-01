@@ -25,8 +25,8 @@ console.log(process.env.NODE_ENV, "process.env.NODE_ENV");
 const app: Application = express();
 
 const whitelistOrigins = [
-  "http://localhost:3000",
-  "http://localhost:4173",
+  // "http://localhost:3000",
+  // "http://localhost:4173",
   "https://soundraft-ui-t9r8z.ondigitalocean.app",
   "https://app.soundraft.app",
 ];
@@ -35,7 +35,7 @@ const corsOptions = {
   origin:
     process.env.NODE_ENV === "development"
       ? ["http://localhost:3000", "http://localhost:4173"]
-      : [...whitelistOrigins, "https://soundraft-ui-t9r8z.ondigitalocean.app"],
+      : [...whitelistOrigins],
   credentials: true,
 };
 
