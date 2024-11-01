@@ -136,18 +136,22 @@ const login = async (req: Request, res: Response) => {
     }
 
     const token = generateSessionToken();
+    console.log(token, "token");
     await createSession(token, existingUser.id);
 
+    console.log("one");
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token, {
       // sameSite: "none",
       secure: process.env.NODE_ENV === "production",
     });
 
-    res.appendHeader("Location", "/");
+    console.log("two");
+    // res.appendHeader("Location", "/");
 
     return res.status(200).json({ status: "success" });
   } catch (error) {
+    console.log(error, "error log");
     logger.error({ error }, "error in sign in");
     return res.status(404).json({ errors: errors.GENERIC, status: "error" });
   }
