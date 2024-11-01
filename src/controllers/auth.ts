@@ -139,7 +139,10 @@ const login = async (req: Request, res: Response) => {
     await createSession(token, existingUser.id);
 
     const cookies = new Cookies(req, res, {});
-    cookies.set(COOKIE_KEY, token, { sameSite: "none" });
+    cookies.set(COOKIE_KEY, token, {
+      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
+    });
 
     res.appendHeader("Location", "/");
 
