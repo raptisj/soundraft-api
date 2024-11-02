@@ -12,9 +12,12 @@ const db = new Pool({
   // ssl: Boolean(process.env.DATABASE_SSL === "true"),
   ssl: {
     // rejectUnauthorized: false,
-    ca: fs.readFileSync("src/config/cert/root.crt").toString(),
+    // ca: fs.readFileSync("src/config/cert/root.crt").toString(),
+    ca: process.env.DATABASE_CA_CERT,
   },
 });
+
+console.log(process.env.DATABASE_CA_CERT, "cert");
 
 export { db };
 
