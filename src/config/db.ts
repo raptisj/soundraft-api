@@ -1,4 +1,5 @@
 import pg from "pg";
+import fs from "node:fs";
 const { Pool } = pg;
 
 const db = new Pool({
@@ -9,6 +10,10 @@ const db = new Pool({
   // port: Number(process.env.DATABASE_PORT),
   connectionString: process.env.DATABASE_URL,
   // ssl: Boolean(process.env.DATABASE_SSL === "true"),
+  ssl: {
+    // rejectUnauthorized: false,
+    ca: fs.readFileSync("./cert/root.crt").toString(),
+  },
 });
 
 export { db };
