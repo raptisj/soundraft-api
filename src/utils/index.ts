@@ -46,3 +46,5 @@ export const isValidEmail = (email: string) => {
 export const isValidPassword = (password: string) => {
   return password && password.length > 6 && password.length < 255;
 };
+
+export const isProd = () => process.env.NODE_ENV === "production";

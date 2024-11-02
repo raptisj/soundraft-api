@@ -14,14 +14,9 @@ import fileUpload from "express-fileupload";
 import cors from "cors";
 import { errorHandler } from "./config/errors";
 import { COOKIE_KEY } from "./constants";
+import { isProd } from "./utils";
 
 const port = process.env.PORT || 4000;
-const apiUrl =
-  process.env.NODE_ENV === "development"
-    ? process.env.LOCAL_API_URL
-    : process.env.PROD_API_URL;
-
-console.log(process.env.NODE_ENV, "process.env.NODE_ENV");
 const app: Application = express();
 
 const whitelistOrigins = [
@@ -29,11 +24,13 @@ const whitelistOrigins = [
   "https://app.soundraft.app",
 ];
 
+const localWhitelistOrigins = [
+  "http://localhost:3000",
+  "http://localhost:4173",
+];
+
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "development"
-      ? ["http://localhost:3000", "http://localhost:4173"]
-      : [...whitelistOrigins],
+  origin: isProd() ? [...whitelistOrigins] : [...localWhitelistOrigins],
   credentials: true,
 };
 
@@ -44,27 +41,27 @@ app.use(cors(corsOptions));
 app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
 app.use(errorHandler);
 
-// app.use((req, res, next) => {
-//   if (req.method === "GET") {
-//     return next();
-//   }
-//   const originHeader = req.headers.origin ?? null;
-//   const hostHeader = req.headers.host ?? null;
-//   console.log(originHeader, "originHeader");
-//   console.log(hostHeader, "hostHeader");
-//   console.log(
-//     verifyRequestOrigin(originHeader, [hostHeader]),
-//     "verifyRequestOrigin(originHeader, [hostHeader])"
-//   );
-//   if (
-//     !originHeader ||
-//     !hostHeader ||
-//     !verifyRequestOrigin(originHeader, [hostHeader])
-//   ) {
-//     return res.status(403).end();
-//   }
-//   return next();
-// });
+app.use((req, res, next) => {
+  //   if (req.method === "GET") {
+  //     return next();
+  //   }
+  const originHeader = req.headers.origin ?? null;
+  const hostHeader = req.headers.host ?? null;
+  console.log(originHeader, "originHeader");
+  console.log(hostHeader, "hostHeader");
+  //   console.log(
+  //     verifyRequestOrigin(originHeader, [hostHeader]),
+  //     "verifyRequestOrigin(originHeader, [hostHeader])"
+  //   );
+  //   if (
+  //     !originHeader ||
+  //     !hostHeader ||
+  //     !verifyRequestOrigin(originHeader, [hostHeader])
+  //   ) {
+  //     return res.status(403).end();
+  //   }
+  return next();
+});
 
 app.use(async (req, res, next) => {
   const cookies = new Cookies(req, res, {});
@@ -100,7 +97,8 @@ app.use("/", roleRouter);
 app.use("/", reactionRouter);
 
 app.listen(port, async () => {
-  console.log(`Soundraft api listening at ${apiUrl}`);
+  console.log("Server is up and listening...🎧..🎸.🥁");
+  // console.log(`Soundraft api listening at ${apiUrl}`);
   // TODO: delete expired sessions
 });
 

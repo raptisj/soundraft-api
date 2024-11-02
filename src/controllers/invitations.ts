@@ -5,7 +5,7 @@ import { COOKIE_KEY, errors } from "../constants";
 import * as roleService from "../services/roles";
 import * as invitationService from "../services/invitations";
 import * as authService from "../services/auth";
-import { generateEntityId } from "../utils";
+import { generateEntityId, isProd } from "../utils";
 import { logger } from "../utils/logger";
 import Cookies from "cookies";
 
@@ -116,7 +116,7 @@ const accept = async (req: Request, res: Response) => {
 
       const cookies = new Cookies(req, res, {});
       cookies.set(COOKIE_KEY, token, {
-        secure: process.env.NODE_ENV === "production",
+        secure: isProd(),
       });
 
       return res.status(201).json({ status: "success" });

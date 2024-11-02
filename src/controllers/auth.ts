@@ -6,7 +6,12 @@ import {
   invalidateSession,
 } from "../config/auth";
 import { COOKIE_KEY, errors } from "../constants";
-import { generateEntityId, isValidEmail, isValidPassword } from "../utils";
+import {
+  generateEntityId,
+  isProd,
+  isValidEmail,
+  isValidPassword,
+} from "../utils";
 import * as authService from "../services/auth";
 import * as userService from "../services/users";
 import * as projectService from "../services/projects";
@@ -43,7 +48,7 @@ const createDefaultProjectAndTicket = async (userId: string) => {
   };
 
   const trackUrl =
-    "https://tqewfwkenyvqfshhzpyu.supabase.co/storage/v1/object/public/musaik/627981_outfoxing.mp3";
+    "https://tqewfwkenyvqfshhzpyu.supabase.co/storage/v1/object/public/musaik/outfoxing.mp3";
 
   const trackPayload = {
     trackId,
@@ -90,6 +95,11 @@ const createDefaultProjectAndTicket = async (userId: string) => {
 
 const signUp = async (req: Request, res: Response) => {
   try {
+    const { data: existingUser } = await userService.getByEmail(req.body.email);
+    if (existingUser) {
+      return res.status(404).json({ errors: errors.USER_ALREADY_EXISTS });
+    }
+
     const { data, error, token } = await authService.signUp(req.body);
     if (error) {
       return res.status(404).json({ errors: error });
@@ -99,7 +109,7 @@ const signUp = async (req: Request, res: Response) => {
 
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token, {
-      secure: process.env.NODE_ENV === "production",
+      secure: isProd(),
     });
     return res.status(201).json({ status: "success" });
   } catch (e) {
@@ -124,7 +134,7 @@ const login = async (req: Request, res: Response) => {
 
     const { data: existingUser } = await userService.getByEmail(req.body.email);
     if (!existingUser) {
-      return res.status(404).json({ errors: errors.USER_DOES_NOT_EXISTS });
+      return res.status(404).json({ errors: errors.USER_DOES_NOT_EXIST });
     }
 
     const validPassword = await argon.verify(existingUser.password, password);
@@ -140,7 +150,7 @@ const login = async (req: Request, res: Response) => {
 
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token, {
-      secure: process.env.NODE_ENV === "production",
+      secure: isProd(),
     });
 
     res.appendHeader("Location", "/");

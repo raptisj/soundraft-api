@@ -1,4 +1,5 @@
 import { db } from "../config/db";
+import { isProd } from "../utils";
 
 // type Invitation = {
 //   id: string;
@@ -49,8 +50,10 @@ export const send = async (payload: any): Promise<any> => {
     JSON.stringify({ id, has_account, invited_email, role, project_id })
   );
 
+  const URL = isProd() ? process.env.PROD_API_URL : process.env.LOCAL_API_URL;
+
   // TODO: add process.env.CLIENT_APP_URL;
-  const url = `http://localhost:3000/auth/accept-invitation/?invitation_token=${inviteToken}`;
+  const url = `${URL}/auth/accept-invitation/?invitation_token=${inviteToken}`;
   console.log(url, "url in email");
 
   return {};

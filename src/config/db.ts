@@ -1,20 +1,23 @@
 import pg from "pg";
-import fs from "node:fs";
+import { isProd } from "../utils";
 const { Pool } = pg;
 
+// user: process.env.DATABASE_USER,
+// host: process.env.DATABASE_HOST,
+// database: process.env.DATABASE_NAME,
+// password: process.env.DATABASE_PASSWORD,
+// port: Number(process.env.DATABASE_PORT),
+// ssl: Boolean(process.env.DATABASE_SSL === "true"),
+
 const db = new Pool({
-  // user: process.env.DATABASE_USER,
-  // host: process.env.DATABASE_HOST,
-  // database: process.env.DATABASE_NAME,
-  // password: process.env.DATABASE_PASSWORD,
-  // port: Number(process.env.DATABASE_PORT),
   connectionString: process.env.DATABASE_URL,
-  // ssl: Boolean(process.env.DATABASE_SSL === "true"),
-  ssl: {
-    rejectUnauthorized: process.env.NODE === "production",
-    // ca: fs.readFileSync("src/config/cert/root.crt").toString(),
-    ca: process.env.DATABASE_CA_CERT,
-  },
+  ssl:
+    process.env.NODE === "production"
+      ? {
+          rejectUnauthorized: isProd(),
+          ca: process.env.DATABASE_CA_CERT,
+        }
+      : false,
 });
 
 export { db };
