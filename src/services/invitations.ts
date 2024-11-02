@@ -1,6 +1,43 @@
 import { db } from "../config/db";
 import { isProd } from "../utils";
+import { email } from "../libs/email";
 
+const template = (url) => `
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" lang="en">
+
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="x-apple-disable-message-reformatting" /><!--$-->
+  </head>
+  <div style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0">Audio collaboration tool that just makes sense.<div> ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿</div>
+  </div>
+
+  <body style="background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,Oxygen-Sans,Ubuntu,Cantarell,&quot;Helvetica Neue&quot;,sans-serif">
+    <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="max-width:37.5em;margin:0 auto;padding:20px 0 48px">
+      <tbody>
+        <tr style="width:100%">
+          <td>
+            <h1 style="text-align:center;margin-top:0px;margin-bottom:0px;line-height:2rem">Soundraft</h1>
+            <p style="font-size:16px;line-height:26px;margin:16px 0">Hi 👋 </p>
+            <p style="font-size:16px;line-height:26px;margin:16px 0">You've been invited to join a projects in Soundraft. Accept the invitation and let the collaboration begins.</p>
+            <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="text-align:center">
+              <tbody>
+                <tr>
+                  <td><a href=${url} style="line-height:100%;text-decoration:none;display:block;max-width:100%;mso-padding-alt:0px;background-color:#9AE6B4;border-radius:3px;color:#183d26;font-size:16px;text-align:center;padding:12px 12px 12px 12px" target="_blank"><span><!--[if mso]><i style="mso-font-width:300%;mso-text-raise:18" hidden>&#8202;&#8202;</i><![endif]--></span><span style="max-width:100%;display:inline-block;line-height:120%;mso-padding-alt:0px;mso-text-raise:9px">Get started</span><span><!--[if mso]><i style="mso-font-width:300%" hidden>&#8202;&#8202;&#8203;</i><![endif]--></span></a></td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-size:16px;line-height:26px;margin:16px 0">Best,<br />Soundraft</p>
+            <hr style="width:100%;border:none;border-top:1px solid #eaeaea;border-color:#cccccc;margin:20px 0" />
+          </td>
+        </tr>
+      </tbody>
+    </table><!--/$-->
+  </body>
+
+</html>
+`;
 // type Invitation = {
 //   id: string;
 //   invited_email: string;
@@ -50,13 +87,31 @@ export const send = async (payload: any): Promise<any> => {
     JSON.stringify({ id, has_account, invited_email, role, project_id })
   );
 
-  const URL = isProd() ? process.env.PROD_API_URL : process.env.LOCAL_API_URL;
+  // const URL = isProd() ? process.env.PROD_API_URL : process.env.CLIENT_APP_URL;
 
   // TODO: add process.env.CLIENT_APP_URL;
-  const url = `${URL}/auth/accept-invitation/?invitation_token=${inviteToken}`;
+  const url = `${process.env.CLIENT_APP_URL}/auth/accept-invitation/?invitation_token=${inviteToken}`;
   console.log(url, "url in email");
 
-  return {};
+  const htmlTemplate = template(url);
+  const { data, error } = await email.send({
+    to: [invited_email],
+    subject: "Invitation for Soundraft!",
+    html: htmlTemplate,
+    // html: "<strong>it works!</strong>",
+  });
+  // const { data, error } = await resend.emails.send({
+  //   from: "Acme <onboarding@resend.dev>",
+  //   to: ["delivered@resend.dev"],
+  //   subject: "hello world",
+  //   html: "<strong>it works!</strong>",
+  // });
+
+  // if (error) {
+  //   return res.status(400).json({ error });
+  // }
+
+  return { data, error };
 };
 
 export const get = async (inviteToken: string): Promise<any> => {
