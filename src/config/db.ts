@@ -12,7 +12,7 @@ const db = new Pool({
   // ssl: Boolean(process.env.DATABASE_SSL === "true"),
   ssl: {
     // rejectUnauthorized: false,
-    ca: fs.readFileSync("./cert/root.crt").toString(),
+    // ca: fs.readFileSync("./cert/root.crt").toString(),
   },
 });
 
