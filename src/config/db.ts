@@ -9,15 +9,14 @@ const { Pool } = pg;
 // port: Number(process.env.DATABASE_PORT),
 // ssl: Boolean(process.env.DATABASE_SSL === "true"),
 
+const sslProdOptions = {
+  rejectUnauthorized: true,
+  ca: process.env.DATABASE_CA_CERT,
+};
+
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl:
-    process.env.NODE === "production"
-      ? {
-          rejectUnauthorized: isProd(),
-          ca: process.env.DATABASE_CA_CERT,
-        }
-      : false,
+  ssl: isProd() ? sslProdOptions : false,
 });
 
 export { db };

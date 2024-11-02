@@ -98,7 +98,6 @@ app.use("/", reactionRouter);
 
 app.listen(port, async () => {
   console.log("Server is up and listening...🎧..🎸.🥁");
-  // console.log(`Soundraft api listening at ${apiUrl}`);
   // TODO: delete expired sessions
 });
 
