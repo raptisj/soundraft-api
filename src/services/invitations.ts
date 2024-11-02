@@ -20,7 +20,7 @@ const template = (url) => `
           <td>
             <h1 style="text-align:center;margin-top:0px;margin-bottom:0px;line-height:2rem">Soundraft</h1>
             <p style="font-size:16px;line-height:26px;margin:16px 0">Hi 👋 </p>
-            <p style="font-size:16px;line-height:26px;margin:16px 0">You've been invited to join a projects in Soundraft. Accept the invitation and let the collaboration begins.</p>
+            <p style="font-size:16px;line-height:26px;margin:16px 0">You've been invited to join a project in Soundraft. Accept the invitation and let the collaboration begin.</p>
             <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="text-align:center">
               <tbody>
                 <tr>
