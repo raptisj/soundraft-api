@@ -11,13 +11,11 @@ const db = new Pool({
   connectionString: process.env.DATABASE_URL,
   // ssl: Boolean(process.env.DATABASE_SSL === "true"),
   ssl: {
-    // rejectUnauthorized: false,
+    rejectUnauthorized: process.env.NODE === "production",
     // ca: fs.readFileSync("src/config/cert/root.crt").toString(),
     ca: process.env.DATABASE_CA_CERT,
   },
 });
-
-console.log(process.env.DATABASE_CA_CERT, "cert");
 
 export { db };
 
