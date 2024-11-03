@@ -47,8 +47,8 @@ app.use((req, res, next) => {
   //   }
   const originHeader = req.headers.origin ?? null;
   const hostHeader = req.headers.host ?? null;
-  console.log(originHeader, "originHeader");
-  console.log(hostHeader, "hostHeader");
+  // console.log(originHeader, "originHeader");
+  // console.log(hostHeader, "hostHeader");
   //   console.log(
   //     verifyRequestOrigin(originHeader, [hostHeader]),
   //     "verifyRequestOrigin(originHeader, [hostHeader])"
@@ -76,7 +76,7 @@ app.use(async (req, res, next) => {
 
   const { session, user } = await validateSessionToken(token);
   if (session?.fresh) {
-    cookies.set(COOKIE_KEY, token);
+    cookies.set(COOKIE_KEY, token, { secure: isProd() });
   }
 
   if (!session) {

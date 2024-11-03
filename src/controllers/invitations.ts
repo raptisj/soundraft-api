@@ -103,12 +103,14 @@ const accept = async (req: Request, res: Response) => {
 
   const invitation = result?.rows[0];
 
+  console.log(invitation, "get invitation");
   if (!invitation.has_account) {
     try {
       const { token, error, data: user } = await authService.signUp(req.body);
       if (error) {
         return res.status(404).json({ errors: error });
       }
+      console.log(user, "sign up user");
 
       await invitationService.accept(invitationId);
 
