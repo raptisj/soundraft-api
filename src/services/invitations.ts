@@ -87,25 +87,19 @@ export const send = async (payload: any): Promise<any> => {
     JSON.stringify({ id, has_account, invited_email, role, project_id })
   );
 
-  // const URL = isProd() ? process.env.PROD_API_URL : process.env.CLIENT_APP_URL;
-
-  // TODO: add process.env.CLIENT_APP_URL;
   const url = `${process.env.CLIENT_APP_URL}/auth/accept-invitation/?invitation_token=${inviteToken}`;
   console.log(url, "url in email");
+
+  if (!isProd()) {
+    return { data: null, error: null };
+  }
 
   const htmlTemplate = template(url);
   const { data, error } = await email.send({
     to: [invited_email],
     subject: "Invitation for Soundraft!",
     html: htmlTemplate,
-    // html: "<strong>it works!</strong>",
   });
-  // const { data, error } = await resend.emails.send({
-  //   from: "Acme <onboarding@resend.dev>",
-  //   to: ["delivered@resend.dev"],
-  //   subject: "hello world",
-  //   html: "<strong>it works!</strong>",
-  // });
 
   // if (error) {
   //   return res.status(400).json({ error });
@@ -132,7 +126,7 @@ export const get = async (inviteToken: string): Promise<any> => {
 
 export const accept = async (invitationId: string): Promise<any> => {
   await db.query(
-    "UPDATE invitations SET invitation_status = $2, has_account = TRUE WHERE id = $1 RETURNING *;",
+    "UPDATE invitations SET invitation_status = $2 WHERE id = $1 RETURNING *;",
     [invitationId, "accepted"]
   );
 
