@@ -24,7 +24,6 @@ export const getAll = async (
       ORDER BY c.created_at DESC;`,
     [ticketId, ticketVersionId, trackId]
   );
-  // AND parent_comment_id IS NULL
 
   return {
     data: results?.rows ?? [],
@@ -108,9 +107,7 @@ export const updateRegion = async (payload: any): Promise<any> => {
   };
 };
 
-export const deleteComment = async (payload: any) => {
-  const { commentId } = payload;
-
+export const deleteComment = async (commentId: string) => {
   try {
     await db.query("DELETE FROM comments WHERE id = $1;", [commentId]);
 

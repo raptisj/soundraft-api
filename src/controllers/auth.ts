@@ -4,7 +4,7 @@ import {
   generateSessionToken,
   createSession,
   invalidateSession,
-} from "../config/auth";
+} from "../libs/auth";
 import { COOKIE_KEY, errors } from "../constants";
 import {
   generateEntityId,
@@ -197,8 +197,10 @@ const currentUser = async (req: Request, res: Response) => {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
+  const { data: currentUser } = await userService.getById(res.locals.user.id);
+
   const userData = {
-    ...res.locals.user,
+    ...currentUser,
     access_type: access?.access_type,
   };
 

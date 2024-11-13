@@ -1,19 +1,31 @@
 import { generateEntityId, isValidEmail, isValidPassword } from "../utils";
 import { db } from "../config/db";
 import { errors } from "../constants";
-import { argon, generateSessionToken, createSession } from "../config/auth";
+import {
+  argon,
+  generateSessionToken,
+  createSession,
+  type Session,
+} from "../libs/auth";
 import { userDTO } from "../dto";
 
+type SignUpProps = {
+  email: string;
+  password: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+};
 export const signUp = async (
-  payload: any
+  payload: SignUpProps
 ): Promise<{
   error: {
     message: string;
     error_code: string;
   };
-  session: any;
+  session: Session;
   token: string;
-  data: any;
+  data: Omit<SignUpProps, "password"> & { id: string };
 }> => {
   const {
     email,

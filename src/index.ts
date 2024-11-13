@@ -1,6 +1,6 @@
 import express, { type Application } from "express";
 import helmet from "helmet";
-import { validateSessionToken } from "./config/auth";
+import { validateSessionToken } from "./libs/auth";
 import { router as authRouter } from "./router/auth";
 import { router as projectRouter } from "./router/projects";
 import { router as ticketRouter } from "./router/tickets";
@@ -41,27 +41,27 @@ app.use(cors(corsOptions));
 app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
 app.use(errorHandler);
 
-app.use((req, res, next) => {
-  //   if (req.method === "GET") {
-  //     return next();
-  //   }
-  const originHeader = req.headers.origin ?? null;
-  const hostHeader = req.headers.host ?? null;
-  // console.log(originHeader, "originHeader");
-  // console.log(hostHeader, "hostHeader");
-  //   console.log(
-  //     verifyRequestOrigin(originHeader, [hostHeader]),
-  //     "verifyRequestOrigin(originHeader, [hostHeader])"
-  //   );
-  //   if (
-  //     !originHeader ||
-  //     !hostHeader ||
-  //     !verifyRequestOrigin(originHeader, [hostHeader])
-  //   ) {
-  //     return res.status(403).end();
-  //   }
-  return next();
-});
+// app.use((req, res, next) => {
+//   //   if (req.method === "GET") {
+//   //     return next();
+//   //   }
+//   const originHeader = req.headers.origin ?? null;
+//   const hostHeader = req.headers.host ?? null;
+//   // console.log(originHeader, "originHeader");
+//   // console.log(hostHeader, "hostHeader");
+//   //   console.log(
+//   //     verifyRequestOrigin(originHeader, [hostHeader]),
+//   //     "verifyRequestOrigin(originHeader, [hostHeader])"
+//   //   );
+//   //   if (
+//   //     !originHeader ||
+//   //     !hostHeader ||
+//   //     !verifyRequestOrigin(originHeader, [hostHeader])
+//   //   ) {
+//   //     return res.status(403).end();
+//   //   }
+//   return next();
+// });
 
 app.use(async (req, res, next) => {
   const cookies = new Cookies(req, res, {});

@@ -21,7 +21,15 @@ export const getAll = async (ticket_id: string) => {
   };
 };
 
-export const create = async (payload: any): Promise<any> => {
+type CreateInvitationProps = {
+  trackId: string;
+  ticketId: string;
+  projectId: string;
+  trackUrl: string;
+  versionId: string;
+  trackName: string;
+};
+export const create = async (payload: CreateInvitationProps) => {
   const { trackId, ticketId, projectId, trackUrl, versionId, trackName } =
     payload;
 

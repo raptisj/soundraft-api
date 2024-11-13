@@ -2,7 +2,7 @@ import { db } from "../config/db";
 import { isProd } from "../utils";
 import { email } from "../libs/email";
 
-const template = (url) => `
+const template = (url: string) => `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html dir="ltr" lang="en">
 
@@ -38,18 +38,19 @@ const template = (url) => `
 
 </html>
 `;
-// type Invitation = {
-//   id: string;
-//   invited_email: string;
-//   role: string;
-//   // has_account: boolean;
-//   role_type: string;
-//   invited_by: string;
-//   status: string;
-//   project_id: string;
-// };
 
-export const create = async (payload: any): Promise<any> => {
+type CreateInvitationProps = {
+  id: string;
+  invited_email: string;
+  role: string;
+  has_account: boolean;
+  role_type: string;
+  invited_by: string;
+  project_id: string;
+  invitation_status: string;
+};
+
+export const create = async (payload: CreateInvitationProps) => {
   const {
     id,
     invited_email,
@@ -80,7 +81,19 @@ export const create = async (payload: any): Promise<any> => {
   };
 };
 
-export const send = async (payload: any): Promise<any> => {
+type SendInvitationProps = {
+  id: string;
+  has_account: boolean;
+  invited_email: string;
+  role: string;
+  project_id: string;
+};
+export const send = async (
+  payload: SendInvitationProps
+): Promise<{
+  data: { id: string };
+  error: { message: string; name: string };
+}> => {
   const { id, has_account, invited_email, role, project_id } = payload;
 
   const inviteToken = btoa(
@@ -90,6 +103,7 @@ export const send = async (payload: any): Promise<any> => {
   const url = `${process.env.CLIENT_APP_URL}/auth/accept-invitation/?invitation_token=${inviteToken}`;
   console.log(url, "url in email");
 
+  // we don't want to send email from local
   if (!isProd()) {
     return { data: null, error: null };
   }
@@ -100,10 +114,6 @@ export const send = async (payload: any): Promise<any> => {
     subject: "Invitation for Soundraft!",
     html: htmlTemplate,
   });
-
-  // if (error) {
-  //   return res.status(400).json({ error });
-  // }
 
   return { data, error };
 };
@@ -124,7 +134,7 @@ export const get = async (inviteToken: string): Promise<any> => {
   };
 };
 
-export const accept = async (invitationId: string): Promise<any> => {
+export const accept = async (invitationId: string): Promise<unknown> => {
   await db.query(
     "UPDATE invitations SET invitation_status = $2 WHERE id = $1 RETURNING *;",
     [invitationId, "accepted"]

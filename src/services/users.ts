@@ -1,5 +1,5 @@
 import { userDTO } from "../dto";
-import { db, DatabaseUser } from "../config/db";
+import { db, type DatabaseUser } from "../config/db";
 
 export const getByEmail = async (email: string) => {
   const result = await db.query("SELECT * FROM users WHERE email = $1", [
@@ -7,7 +7,7 @@ export const getByEmail = async (email: string) => {
   ]);
 
   return {
-    data: result?.rows[0] as DatabaseUser | undefined,
+    data: userDTO(result?.rows[0]) as DatabaseUser | undefined,
   };
 };
 
@@ -15,13 +15,21 @@ export const getById = async (id: string) => {
   const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
 
   return {
-    data: result?.rows[0] as DatabaseUser | undefined,
+    data: userDTO(result?.rows[0]) as DatabaseUser | undefined,
   };
 };
 
-export const updateProfile = async (payload: any, userData: any) => {
+type UpdateProfileProps = {
+  username: string;
+  first_name: string;
+  last_name: string;
+};
+export const updateProfile = async (
+  payload: UpdateProfileProps,
+  userData: UpdateProfileProps & { id: string }
+) => {
   const {
-    username = userData.usename ?? "",
+    username = userData.username ?? "",
     first_name = userData.first_name ?? "",
     last_name = userData.last_name ?? "",
   } = payload;

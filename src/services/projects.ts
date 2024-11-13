@@ -1,6 +1,7 @@
 import { generateEntityId } from "../utils";
 import { db } from "../config/db";
 import { errors } from "../constants";
+import { userDTO } from "../dto";
 
 export const getAll = async (userId: string): Promise<any> => {
   const results = await db.query(
@@ -139,6 +140,6 @@ export const accessProject = async (id: string) => {
 
   return {
     data: result?.rows[0],
-    user: userResult ? userResult.rows[0] : null,
+    user: userResult ? userDTO(userResult.rows[0]) : null,
   };
 };

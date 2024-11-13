@@ -159,9 +159,10 @@ const update = async (req: Request, res: Response) => {
     if (error) {
       return res.status(404).json({ errors: error });
     }
-    let response = {
+    const response = {
       ...comment,
       region: null,
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } as any;
 
     if (regionId && startInt && endInt) {
@@ -185,13 +186,11 @@ const del = async (req: Request, res: Response) => {
 
   const regionId: any = req.query?.region_id || null;
 
-  const payload = { commentId };
-
   try {
     if (regionId) {
       await commentService.deleteRegion(regionId);
     }
-    await commentService.deleteComment(payload);
+    await commentService.deleteComment(commentId);
     return res.status(200).json({});
   } catch (e) {
     logger.error({ error: e }, "error in deleting comment");
