@@ -7,7 +7,7 @@ export const getByEmail = async (email: string) => {
   ]);
 
   return {
-    data: userDTO(result?.rows[0]) as DatabaseUser | undefined,
+    data: result?.rows[0] as DatabaseUser | undefined,
   };
 };
 
