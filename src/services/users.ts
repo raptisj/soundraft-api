@@ -15,7 +15,7 @@ export const getById = async (id: string) => {
   const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
 
   return {
-    data: userDTO(result?.rows[0]) as DatabaseUser | undefined,
+    data: result?.rows[0] as DatabaseUser | undefined,
   };
 };
 
