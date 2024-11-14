@@ -197,9 +197,7 @@ const currentUser = async (req: Request, res: Response) => {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
-  console.log(res.locals.user, "res.locals.user");
   const { data: currentUser } = await userService.getById(res.locals.user.id);
-  console.log(currentUser, "currentUser");
 
   const userData = {
     ...currentUser,

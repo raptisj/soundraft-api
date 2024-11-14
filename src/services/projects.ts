@@ -138,8 +138,6 @@ export const accessProject = async (id: string) => {
     userResult = await db.query("SELECT * FROM users WHERE id = $1;", ["0"]);
   }
 
-  console.log(userResult, "userResult");
-
   return {
     data: result?.rows[0],
     user: userResult || null,
