@@ -80,6 +80,7 @@ app.use(async (req, res, next) => {
       secure: isProd(),
       domain: isProd() ? ".soundraft.app" : "localhost",
       sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     });
   }
 

@@ -119,6 +119,7 @@ const accept = async (req: Request, res: Response) => {
         secure: isProd(),
         domain: isProd() ? ".soundraft.app" : "localhost",
         sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
       });
 
       return res.status(201).json({ status: "success" });
