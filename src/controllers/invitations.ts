@@ -117,9 +117,10 @@ const accept = async (req: Request, res: Response) => {
       const cookies = new Cookies(req, res, {});
       cookies.set(COOKIE_KEY, token, {
         secure: isProd(),
-        domain: isProd() ? ".soundraft.app" : "localhost",
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
+        // domain: isProd() ? ".soundraft.app" : "localhost",
+        // sameSite: "none",
+        // maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 60 * 60 * 1000,
       });
 
       return res.status(201).json({ status: "success" });

@@ -78,9 +78,10 @@ app.use(async (req, res, next) => {
   if (session?.fresh) {
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
-      domain: isProd() ? ".soundraft.app" : "localhost",
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
+      // domain: isProd() ? ".soundraft.app" : "localhost",
+      // sameSite: "none",
+      // maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
   }
 
