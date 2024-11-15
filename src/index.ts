@@ -76,7 +76,10 @@ app.use(async (req, res, next) => {
 
   const { session, user } = await validateSessionToken(token);
   if (session?.fresh) {
-    cookies.set(COOKIE_KEY, token, { secure: isProd() });
+    cookies.set(COOKIE_KEY, token, {
+      secure: isProd(),
+      domain: isProd() ? ".soundraft.app" : "localhost",
+    });
   }
 
   if (!session) {
