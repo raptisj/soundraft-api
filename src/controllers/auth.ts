@@ -111,6 +111,7 @@ const signUp = async (req: Request, res: Response) => {
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
       domain: isProd() ? ".soundraft.app" : "localhost",
+      sameSite: "none",
     });
     return res.status(201).json({ status: "success" });
   } catch (e) {
@@ -153,6 +154,7 @@ const login = async (req: Request, res: Response) => {
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
       domain: isProd() ? ".soundraft.app" : "localhost",
+      sameSite: "none",
     });
 
     res.appendHeader("Location", "/");
@@ -166,16 +168,13 @@ const login = async (req: Request, res: Response) => {
 };
 
 const logout = async (req: Request, res: Response) => {
-  if (!res.locals.session) {
-    return res.status(401).end();
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
-  await invalidateSession(res.locals.session.id);
-
   const cookies = new Cookies(req, res, {});
-  cookies.set(COOKIE_KEY, null, {
-    secure: process.env.NODE_ENV === "production",
-  });
+  cookies.set(COOKIE_KEY, null);
+  await invalidateSession(res.locals.session.id);
 
   return res.status(200).end();
 };

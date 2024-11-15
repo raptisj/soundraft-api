@@ -79,6 +79,7 @@ app.use(async (req, res, next) => {
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
       domain: isProd() ? ".soundraft.app" : "localhost",
+      sameSite: "none",
     });
   }
 
