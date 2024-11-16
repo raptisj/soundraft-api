@@ -123,7 +123,7 @@ const accept = async (req: Request, res: Response) => {
         maxAge: 60 * 60 * 1000,
       });
 
-      return res.status(201).json({ status: "success" });
+      return res.status(201).json({ status: "success", userId: user.id });
     } catch (e) {
       console.log(e, "e");
       return res.status(400).json({ errors: errors.GENERIC });

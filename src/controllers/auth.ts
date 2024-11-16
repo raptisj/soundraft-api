@@ -100,12 +100,12 @@ const signUp = async (req: Request, res: Response) => {
       return res.status(404).json({ errors: errors.USER_ALREADY_EXISTS });
     }
 
-    const { data, error, token } = await authService.signUp(req.body);
+    const { data: user, error, token } = await authService.signUp(req.body);
     if (error) {
       return res.status(404).json({ errors: error });
     }
 
-    await createDefaultProjectAndTicket(data.id);
+    await createDefaultProjectAndTicket(user.id);
 
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token, {
@@ -115,7 +115,7 @@ const signUp = async (req: Request, res: Response) => {
       // maxAge: 24 * 60 * 60 * 1000,
       maxAge: 60 * 60 * 1000,
     });
-    return res.status(201).json({ status: "success" });
+    return res.status(201).json({ status: "success", userId: user.id });
   } catch (e) {
     logger.error({ error: e }, "error in sign up");
     return res.status(400).json({ errors: errors.GENERIC });
@@ -163,7 +163,7 @@ const login = async (req: Request, res: Response) => {
 
     res.appendHeader("Location", "/");
 
-    return res.status(200).json({ status: "success" });
+    return res.status(200).json({ status: "success", userId: existingUser.id });
   } catch (error) {
     console.log(error, "error log");
     logger.error({ error }, "error in sign in");
@@ -177,7 +177,7 @@ const logout = async (req: Request, res: Response) => {
   }
 
   const cookies = new Cookies(req, res, {});
-  cookies.set(COOKIE_KEY, null);
+  cookies.set(COOKIE_KEY, "");
   await invalidateSession(res.locals.session.id);
 
   return res.status(200).end();

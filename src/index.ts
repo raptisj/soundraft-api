@@ -78,15 +78,13 @@ app.use(async (req, res, next) => {
   if (session?.fresh) {
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
-      // domain: isProd() ? ".soundraft.app" : "localhost",
-      // sameSite: "none",
       // maxAge: 24 * 60 * 60 * 1000,
       maxAge: 60 * 60 * 1000,
     });
   }
 
   if (!session) {
-    cookies.set(COOKIE_KEY, null);
+    cookies.set(COOKIE_KEY, "");
   }
   res.locals.session = session;
   res.locals.user = user;
