@@ -5,7 +5,7 @@ export const createRole = async (
   role: string,
   userId: string,
   projectId: string
-): Promise<any> => {
+) => {
   const roleId = generateEntityId("rol");
 
   const results = await db.query(
@@ -21,7 +21,7 @@ export const createRole = async (
 export const removeFromProject = async (
   memberId: string,
   projectId: string
-): Promise<any> => {
+) => {
   await db.query("DELETE FROM roles WHERE user_id = $1 AND project_id = $2;", [
     memberId,
     projectId,
@@ -30,10 +30,13 @@ export const removeFromProject = async (
   return {};
 };
 
-export const getRole = async (
-  memberId: string,
-  projectId: string
-): Promise<any> => {
+export const deleteRole = async (memberId: string) => {
+  await db.query("DELETE FROM roles WHERE id = $1;", [memberId]);
+
+  return {};
+};
+
+export const getRole = async (memberId: string, projectId: string) => {
   const userRoleResult = await db.query(
     "SELECT * FROM roles WHERE user_id = $1 AND project_id = $2;",
     [memberId, projectId]
@@ -51,7 +54,7 @@ export const getRole = async (
   };
 };
 
-export const update = async (roleId: string, role: string): Promise<any> => {
+export const update = async (roleId: string, role: string) => {
   const results = await db.query(
     "UPDATE roles SET role = $2 WHERE id = $1 RETURNING *;",
     [roleId, role]

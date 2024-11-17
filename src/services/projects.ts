@@ -3,7 +3,7 @@ import { db } from "../config/db";
 import { errors } from "../constants";
 import { userDTO } from "../dto";
 
-export const getAll = async (userId: string): Promise<any> => {
+export const getAll = async (userId: string) => {
   const results = await db.query(
     `SELECT p.*, json_agg(json_build_object(
       'user_id', u.id,
@@ -31,7 +31,7 @@ export const getAll = async (userId: string): Promise<any> => {
   };
 };
 
-export const getSingle = async (id: string): Promise<any> => {
+export const getSingle = async (id: string) => {
   const results = await db.query(
     `SELECT p.*, json_agg(json_build_object(
       'user_id', u.id,
@@ -95,7 +95,7 @@ export const update = async (
   projectStatus: string,
   userId: string,
   accessType: string
-): Promise<any> => {
+) => {
   const results = await db.query(
     `UPDATE projects p SET name = $2, description = $3, project_status = $4, access_type = $5
       WHERE p.id = $1

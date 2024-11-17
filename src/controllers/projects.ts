@@ -21,6 +21,10 @@ const getAll = async (_: Request, res: Response) => {
 };
 
 const getSingle = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
   const id = req.params.id;
 
   try {

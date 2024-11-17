@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { errors } from "../constants";
 import * as roleService from "../services/roles";
 
@@ -28,4 +28,21 @@ const update = async (req: Request, res: Response) => {
   }
 };
 
-export { update };
+const remove = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const memberId = req.params.id;
+
+  try {
+    await roleService.deleteRole(memberId);
+
+    return res.status(201).json({});
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(400).json({ errors: errors.GENERIC });
+  }
+};
+
+export { update, remove };

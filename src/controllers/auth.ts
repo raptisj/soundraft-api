@@ -5,7 +5,7 @@ import {
   createSession,
   invalidateSession,
 } from "../libs/auth";
-import { COOKIE_KEY, errors } from "../constants";
+import { COOKIE_KEY, COOKIE_MAX_AGE, errors } from "../constants";
 import {
   generateEntityId,
   isProd,
@@ -110,10 +110,7 @@ const signUp = async (req: Request, res: Response) => {
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
-      // domain: isProd() ? ".soundraft.app" : "localhost",
-      // sameSite: "none",
-      // maxAge: 24 * 60 * 60 * 1000,
-      maxAge: 60 * 60 * 1000,
+      maxAge: 60 * 60 * 1000, // COOKIE_MAX_AGE // 30 days
     });
     return res.status(201).json({ status: "success", userId: user.id });
   } catch (e) {
@@ -155,10 +152,7 @@ const login = async (req: Request, res: Response) => {
     const cookies = new Cookies(req, res, {});
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
-      // domain: isProd() ? ".soundraft.app" : "localhost",
-      // sameSite: "none",
-      maxAge: 60 * 60 * 1000,
-      // maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 60 * 60 * 1000, // COOKIE_MAX_AGE // 30 days
     });
 
     res.appendHeader("Location", "/");
@@ -177,7 +171,7 @@ const logout = async (req: Request, res: Response) => {
   }
 
   const cookies = new Cookies(req, res, {});
-  cookies.set(COOKIE_KEY, "");
+  cookies.set(COOKIE_KEY, "", { maxAge: 0 });
   await invalidateSession(res.locals.session.id);
 
   return res.status(200).end();
@@ -204,10 +198,7 @@ const currentUser = async (req: Request, res: Response) => {
 
   const { data: currentUser } = await userService.getById(res.locals.user.id);
 
-  const userData = {
-    ...currentUser,
-    // access_type: access?.access_type,
-  };
+  const userData = { ...currentUser };
 
   return res.status(200).json(userData);
 };

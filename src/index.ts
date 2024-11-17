@@ -13,7 +13,7 @@ import Cookies from "cookies";
 import fileUpload from "express-fileupload";
 import cors from "cors";
 import { errorHandler } from "./config/errors";
-import { COOKIE_KEY } from "./constants";
+import { COOKIE_KEY, COOKIE_MAX_AGE } from "./constants";
 import { isProd } from "./utils";
 
 const port = process.env.PORT || 4000;
@@ -78,13 +78,12 @@ app.use(async (req, res, next) => {
   if (session?.fresh) {
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
-      // maxAge: 24 * 60 * 60 * 1000,
-      maxAge: 60 * 60 * 1000,
+      maxAge: 60 * 60 * 1000, // COOKIE_MAX_AGE // 30 days
     });
   }
 
   if (!session) {
-    cookies.set(COOKIE_KEY, "");
+    cookies.set(COOKIE_KEY, "", { maxAge: 0 });
   }
   res.locals.session = session;
   res.locals.user = user;
