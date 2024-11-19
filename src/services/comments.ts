@@ -15,9 +15,17 @@ export const getAll = async (
       'start_int', r.start_int,
       'end_int', r.end_int,
       'created_at', r.created_at
-      ) AS region
+      ) AS region,
+        json_build_object(
+        'id', u.id,
+        'first_name', u.first_name,
+        'last_name', u.last_name,
+        'username', u.username,
+        'email', u.email
+      ) AS user
       FROM comments c
       LEFT JOIN regions r ON c.id = r.comment_id
+      LEFT JOIN users u ON c.user_id = u.id
       WHERE c.ticket_id = $1
       AND c.ticket_version_id = $2
       AND c.track_id = $3
