@@ -31,8 +31,8 @@ const create = async (req: Request, res: Response) => {
 
   const invitationExists = invitationExistsResult?.rows[0];
 
-  if (invitationExists) {
-    console.log("invitation exists");
+  if (invitationExists && invitationExists.invitation_status === "pending") {
+    logger.info({ invitationExists }, "invitation exists");
     return res.status(404).json({ errors: errors.INVITATION_ALREADY_SENT });
   }
 
@@ -139,7 +139,7 @@ const accept = async (req: Request, res: Response) => {
 
     await roleService.createRole(invitation.role, invitee.id, projectId);
 
-    return res.status(200).json({});
+    return res.status(200).json({ status: "success" });
   } catch (e) {
     console.log(e, "e");
     return res.status(404).end();
