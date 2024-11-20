@@ -90,9 +90,9 @@ const create = async (req: Request, res: Response) => {
   // TODO: add bucket implementation
   // const trackUrl = req.files.track_url || null;
   // console.log(req.files.track_url, "req.files.track_url");
-  const trackUrl = req.body?.track_url || null;
+  const trackUrl = req.body?.track_url !== "null" ? req.body?.track_url : "";
 
-  const trackName = req.body?.track_name || null;
+  const trackName = req.body?.track_name !== "null" ? req.body?.track_name : "";
 
   // if (!trackUrl) {
   //   return res.status(404).json({ errors: errors.GENERIC });
