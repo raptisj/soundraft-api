@@ -224,4 +224,11 @@ const updateUserProfile = async (req: Request, res: Response) => {
   }
 };
 
-export { signUp, login, logout, currentUser, updateUserProfile };
+export {
+  signUp,
+  login,
+  logout,
+  currentUser,
+  updateUserProfile,
+  createDefaultProjectAndTicket,
+};

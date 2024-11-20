@@ -8,6 +8,7 @@ import * as authService from "../services/auth";
 import { generateEntityId, isProd } from "../utils";
 import { logger } from "../utils/logger";
 import Cookies from "cookies";
+import { createDefaultProjectAndTicket } from "./auth";
 
 const create = async (req: Request, res: Response) => {
   if (!res.locals.user) {
@@ -113,6 +114,8 @@ const accept = async (req: Request, res: Response) => {
       await invitationService.accept(invitationId);
 
       await roleService.createRole(invitation.role, user.id, projectId);
+
+      await createDefaultProjectAndTicket(user.id);
 
       const cookies = new Cookies(req, res, {});
       cookies.set(COOKIE_KEY, token, {
