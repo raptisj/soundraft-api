@@ -142,7 +142,7 @@ const accept = async (req: Request, res: Response) => {
 
     await roleService.createRole(invitation.role, invitee.id, projectId);
 
-    return res.status(200).json({ status: "success" });
+    return res.status(200).json({ status: "success", userId: invitee.id });
   } catch (e) {
     console.log(e, "e");
     return res.status(404).end();
