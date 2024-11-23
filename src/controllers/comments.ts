@@ -1,31 +1,31 @@
 import type { Request, Response } from "express";
 import { errors } from "../constants";
 import * as commentService from "../services/comments";
-import * as projectService from "../services/projects";
+// import * as projectService from "../services/projects";
 import { generateEntityId } from "../utils";
 import { logger } from "../utils/logger";
 
 const getAll = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
-  const ticketVersionId: any = req.query.ticket_version_id;
-  const trackId: any = req.query.track_id;
-  const projectId = req.params.projectId;
+  const ticketVersionId = req.query.ticket_version_id as string;
+  // const trackId: any = req.query.track_id;
+  // const projectId = req.params.projectId;
 
-  const { data: access } = await projectService.accessProject(projectId);
+  // const { data: access } = await projectService.accessProject(projectId);
 
-  if (!res.locals.user && access.access_type === "limited") {
+  if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
   try {
-    const { data: comments, error } = await commentService.getAll(
+    const { data: comments } = await commentService.getAll(
       ticketId,
-      ticketVersionId,
-      trackId
+      ticketVersionId
+      // trackId
     );
-    if (error) {
-      return res.status(404).json({ errors: error });
-    }
+    // if (error) {
+    //   return res.status(404).json({ errors: error });
+    // }
 
     // TODO: find a better way to doo this
     const sanitizeResponse = comments.map((c: any) => {
@@ -45,11 +45,11 @@ const getAll = async (req: Request, res: Response) => {
 
 const create = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
-  const projectId = req.params.projectId;
+  // const projectId = req.params.projectId;
 
-  const { data: access } = await projectService.accessProject(projectId);
+  // const { data: access } = await projectService.accessProject(projectId);
 
-  if (!res.locals.user && access.access_type === "limited") {
+  if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
@@ -57,8 +57,8 @@ const create = async (req: Request, res: Response) => {
 
   // comment body
   const commentId = generateEntityId("com");
-  const trackId = req.body?.track_id || null;
-  const ticketVersionId = req.body?.ticket_version_id || null;
+  const trackId = req.body?.track_id || "";
+  const ticketVersionId = req.body?.ticket_version_id || "";
   const content = req.body?.content || "";
   const parentCommentId = req.body?.parent_comment_id || null;
 
@@ -70,7 +70,7 @@ const create = async (req: Request, res: Response) => {
   const startInt = req.body?.start_int || null;
   const endInt = req.body?.end_int || null;
 
-  if (!trackId || !ticketVersionId || !content) {
+  if (!ticketVersionId || !content) {
     return res.status(404).json({ errors: errors.GENERIC });
   }
 
@@ -95,10 +95,10 @@ const create = async (req: Request, res: Response) => {
   };
 
   try {
-    const { data: comment, error } = await commentService.create(payload);
-    if (error) {
-      return res.status(404).json({ errors: error });
-    }
+    const { data: comment } = await commentService.create(payload);
+    // if (error) {
+    //   return res.status(404).json({ errors: error });
+    // }
     const response = {
       ...comment,
       region: null,
@@ -155,10 +155,10 @@ const update = async (req: Request, res: Response) => {
   };
 
   try {
-    const { data: comment, error } = await commentService.update(payload);
-    if (error) {
-      return res.status(404).json({ errors: error });
-    }
+    const { data: comment } = await commentService.update(payload);
+    // if (error) {
+    //   return res.status(404).json({ errors: error });
+    // }
     const response = {
       ...comment,
       region: null,
@@ -184,7 +184,7 @@ const del = async (req: Request, res: Response) => {
 
   const commentId = req.params.commentId;
 
-  const regionId: any = req.query?.region_id || null;
+  const regionId = (req.query?.region_id as string) || null;
 
   try {
     if (regionId) {

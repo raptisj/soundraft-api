@@ -2,9 +2,9 @@ import { db } from "../config/db";
 
 export const getAll = async (
   ticketId: string,
-  ticketVersionId: string,
-  trackId: string
-): Promise<any> => {
+  ticketVersionId: string
+  // trackId: string
+) => {
   const results = await db.query(
     `SELECT c.*, json_build_object(
       'id', r.id,
@@ -28,9 +28,9 @@ export const getAll = async (
       LEFT JOIN users u ON c.user_id = u.id
       WHERE c.ticket_id = $1
       AND c.ticket_version_id = $2
-      AND c.track_id = $3
       ORDER BY c.created_at DESC;`,
-    [ticketId, ticketVersionId, trackId]
+    [ticketId, ticketVersionId]
+    // AND c.track_id = $3
   );
 
   return {
@@ -38,7 +38,7 @@ export const getAll = async (
   };
 };
 
-export const create = async (payload: any): Promise<any> => {
+export const create = async (payload: any) => {
   const {
     commentId,
     ticketId,
@@ -67,7 +67,7 @@ export const create = async (payload: any): Promise<any> => {
   };
 };
 
-export const update = async (payload: any): Promise<any> => {
+export const update = async (payload: any) => {
   const { commentId, ticketId, ticketVersionId, content } = payload;
 
   const results = await db.query(
@@ -80,7 +80,7 @@ export const update = async (payload: any): Promise<any> => {
   };
 };
 
-export const createRegion = async (payload: any): Promise<any> => {
+export const createRegion = async (payload: any) => {
   const {
     regionId,
     commentId,
@@ -101,7 +101,7 @@ export const createRegion = async (payload: any): Promise<any> => {
   };
 };
 
-export const updateRegion = async (payload: any): Promise<any> => {
+export const updateRegion = async (payload: any) => {
   const { regionId, commentId, startString, endString, startInt, endInt } =
     payload;
 
