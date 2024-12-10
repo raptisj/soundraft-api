@@ -120,7 +120,7 @@ const accept = async (req: Request, res: Response) => {
       const cookies = new Cookies(req, res, {});
       cookies.set(COOKIE_KEY, token, {
         secure: isProd(),
-        maxAge: 60 * 60 * 1000, // COOKIE_MAX_AGE // 30 days
+        maxAge: 24 * 60 * 60 * 1000, // COOKIE_MAX_AGE // 30 days
       });
 
       return res.status(201).json({ status: "success", userId: user.id });

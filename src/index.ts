@@ -78,7 +78,7 @@ app.use(async (req, res, next) => {
   if (session?.fresh) {
     cookies.set(COOKIE_KEY, token, {
       secure: isProd(),
-      maxAge: 60 * 60 * 1000, // COOKIE_MAX_AGE // 30 days
+      maxAge: 24 * 60 * 60 * 1000, // COOKIE_MAX_AGE // 30 days
     });
   }
 

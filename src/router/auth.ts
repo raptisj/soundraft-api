@@ -4,10 +4,18 @@ import * as authController from "../controllers/auth";
 
 const router = express.Router();
 
+// TODO: to be deprecated
 router.post("/auth/signup", authController.signUp);
 router.post("/auth/login", authController.login);
 router.post("/auth/logout", authController.logout);
 router.get("/user", authController.currentUser);
 router.put("/user", authController.updateUserProfile);
+
+// keep
+router.post("/v1/auth/signup", authController.signUp);
+router.post("/v1/auth/login", authController.login);
+router.post("/v1/auth/logout", authController.logout);
+router.get("/v1/user", authController.currentUser);
+router.put("/v1/user", authController.updateUserProfile);
 
 export { router };

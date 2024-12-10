@@ -9,6 +9,7 @@ const TICKET_VERSIONS_ENDPOINT_ID = `${TICKET_VERSIONS_ENDPOINT}/:versionId`;
 
 const router = express.Router();
 
+// TODO: to be deprecated
 router.get("/projects/:projectId/tickets", ticketController.getAll);
 router.get(
   "/projects/:projectId/tickets/:ticketId",
@@ -45,4 +46,23 @@ router.delete(TICKET_VERSIONS_ENDPOINT_ID, ticketController.deleteVersion);
 //   ticketController.deleteVersion
 // );
 
+// keep
+router.get("/v1/tickets", ticketController.getAll);
+router.get("/v1/tickets/:ticketId", ticketController.getSingle);
+router.post("/v1/tickets", ticketController.create);
+router.put("/v1/tickets/:ticketId", ticketController.update);
+router.delete("/v1/tickets/:ticketId", ticketController.del);
+
+router.post("/v1/tickets/:ticketId/track", ticketController.uploadTrack);
+
+router.get("/v1/tickets/:ticketId/versions", ticketController.getAllVersions);
+router.get(
+  "/v1/tickets/:ticketId/versions/:versionId",
+  ticketController.getSingleVersion
+);
+router.post("/v1/tickets/:ticketId/versions", ticketController.createVersion);
+router.delete(
+  "/v1/tickets/:ticketId/versions/:versionId",
+  ticketController.deleteVersion
+);
 export { router };
