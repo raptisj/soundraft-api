@@ -31,13 +31,10 @@ const getAll = async (req: Request, res: Response) => {
 
 const getSingle = async (req: Request, res: Response, next: NextFunction) => {
   const ticketId = req.params.ticketId;
-  const projectId = req.params.projectId;
   const versionId = req.query.version_id as string;
+  const projectId = req.query.project_id as string;
 
-  // const { data: access } = await ticketService.accessTicket(ticketId);
-  const { data: access } = await projectService.accessProject(projectId);
-
-  if (!res.locals.user && access.access_type === "limited") {
+  if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
@@ -101,8 +98,8 @@ const create = async (req: Request, res: Response) => {
   const ticketId = generateEntityId("ti");
   const trackId = generateEntityId("tra");
   const versionId = generateEntityId("vrs");
-  const projectId = req.params.projectId;
 
+  const projectId = req.body?.project_id;
   const assignee: string =
     req.body?.assignee !== "null" ? req.body?.assignee : null;
   const deadline: string =
@@ -159,8 +156,8 @@ const uploadTrack = async (req: Request, res: Response) => {
 
   const trackId = generateEntityId("tra");
   const ticketId = req.params.ticketId;
-  const projectId = req.params.projectId;
 
+  const projectId = req.body.project_id;
   const trackUrl = req.body?.track_url || null;
   const trackName = req.body?.track_name || null;
   const versionId = req.body?.version_id ?? null;
@@ -195,7 +192,8 @@ const update = async (req: Request, res: Response) => {
 
   const userId = res.locals.user.id;
   const ticketId = req.params.ticketId;
-  const projectId = req.params.projectId;
+
+  const projectId = req.body.project_id;
 
   const isAdmin = await roleService.isProjectAdmin(projectId, userId);
   if (!isAdmin) {
@@ -235,7 +233,8 @@ const del = async (req: Request, res: Response) => {
 
   const userId = res.locals.user.id;
   const ticketId = req.params.ticketId;
-  const projectId = req.params.projectId;
+  const projectId = req.query.project_id as string;
+
   const isAdmin = await roleService.isProjectAdmin(projectId, userId);
 
   if (!isAdmin) {
@@ -321,7 +320,8 @@ const deleteVersion = async (req: Request, res: Response) => {
   const userId = res.locals.user.id;
   const ticketId = req.params.ticketId;
   const versionId = req.params.versionId;
-  const projectId = req.params.projectId;
+  const projectId = req.query.project_id as string;
+
   const isAdmin = await roleService.isProjectAdmin(projectId, userId);
 
   if (!isAdmin) {

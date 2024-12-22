@@ -1,7 +1,6 @@
 import { generateEntityId } from "../utils";
 import { db } from "../config/db";
 import { errors } from "../constants";
-import { userDTO } from "../dto";
 
 export const getAll = async (userId: string) => {
   const results = await db.query(

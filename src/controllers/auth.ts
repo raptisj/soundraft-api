@@ -178,20 +178,6 @@ const logout = async (req: Request, res: Response) => {
 };
 
 const currentUser = async (req: Request, res: Response) => {
-  const projectId = req.query.project_id as string;
-  // const ticketId: any = req.query.ticket_id;
-
-  // const { data: access, user } = await ticketService.accessTicket(ticketId);
-  const { data: access, user } = await projectService.accessProject(projectId);
-
-  if (
-    (access?.access_type === "public_edit" ||
-      access?.access_type === "public_read_only") &&
-    !res.locals.user
-  ) {
-    return res.status(200).json({ ...user, access_type: access?.access_type });
-  }
-
   if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }

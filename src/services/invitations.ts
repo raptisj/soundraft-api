@@ -126,9 +126,6 @@ export const get = async (inviteToken: string) => {
     id,
   ]);
 
-  // const url = `http://localhost:3000/auth/accept-invitation/${inviteToken}`;
-  // console.log(url, "url in email");
-
   return {
     data: results?.rows[0],
   };
