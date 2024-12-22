@@ -11,7 +11,7 @@ type SendOptionProps = {
 
 const send = async (options: SendOptionProps) => {
   const { data, error } = await resend.emails.send({
-    from: "Soundraft <send@soundraft.app>",
+    from: "Soundraft <no-reply@soundraft.app>",
     ...options,
   });
 

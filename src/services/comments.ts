@@ -1,10 +1,6 @@
 import { db } from "../config/db";
 
-export const getAll = async (
-  ticketId: string,
-  ticketVersionId: string
-  // trackId: string
-) => {
+export const getAll = async (ticketId: string, ticketVersionId: string) => {
   const results = await db.query(
     `SELECT c.*, json_build_object(
       'id', r.id,
@@ -30,7 +26,6 @@ export const getAll = async (
       AND c.ticket_version_id = $2
       ORDER BY c.created_at DESC;`,
     [ticketId, ticketVersionId]
-    // AND c.track_id = $3
   );
 
   return {

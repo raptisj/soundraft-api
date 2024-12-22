@@ -1,17 +1,12 @@
 import type { Request, Response } from "express";
 import { errors } from "../constants";
 import * as commentService from "../services/comments";
-// import * as projectService from "../services/projects";
 import { generateEntityId } from "../utils";
 import { logger } from "../utils/logger";
 
 const getAll = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
   const ticketVersionId = req.query.ticket_version_id as string;
-  // const trackId: any = req.query.track_id;
-  // const projectId = req.params.projectId;
-
-  // const { data: access } = await projectService.accessProject(projectId);
 
   if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
@@ -21,11 +16,7 @@ const getAll = async (req: Request, res: Response) => {
     const { data: comments } = await commentService.getAll(
       ticketId,
       ticketVersionId
-      // trackId
     );
-    // if (error) {
-    //   return res.status(404).json({ errors: error });
-    // }
 
     // TODO: find a better way to doo this
     const sanitizeResponse = comments.map((c: any) => {
@@ -45,9 +36,6 @@ const getAll = async (req: Request, res: Response) => {
 
 const create = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
-  // const projectId = req.params.projectId;
-
-  // const { data: access } = await projectService.accessProject(projectId);
 
   if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });

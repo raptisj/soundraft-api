@@ -123,30 +123,4 @@ const del = async (req: Request, res: Response) => {
   }
 };
 
-const removeMember = async (req: Request, res: Response) => {
-  if (!res.locals.user) {
-    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
-  }
-
-  const userId = res.locals.user.id;
-  const memberId = req.body?.member_id;
-  const projectId = req.params.id;
-
-  const userRole = await roleService.getRole(userId, projectId);
-
-  if (!userRole.isAdmin()) {
-    console.log("User is not admin");
-    return res.status(404).json({ errors: errors.USER_NOT_ADMIN });
-  }
-
-  try {
-    await roleService.removeFromProject(memberId, projectId);
-
-    return res.status(201).json({});
-  } catch (e) {
-    console.log(e, "e");
-    return res.status(400).json({ errors: errors.GENERIC });
-  }
-};
-
-export { getAll, getSingle, create, update, del, removeMember };
+export { getAll, getSingle, create, update, del };

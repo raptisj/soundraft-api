@@ -18,18 +18,6 @@ export const createRole = async (
   };
 };
 
-export const removeFromProject = async (
-  memberId: string,
-  projectId: string
-) => {
-  await db.query("DELETE FROM roles WHERE user_id = $1 AND project_id = $2;", [
-    memberId,
-    projectId,
-  ]);
-
-  return {};
-};
-
 export const deleteRole = async (memberId: string) => {
   await db.query("DELETE FROM roles WHERE id = $1;", [memberId]);
 
