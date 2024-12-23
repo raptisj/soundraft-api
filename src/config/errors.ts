@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 
 export class CustomError extends Error {
   error_code: string;
@@ -31,9 +31,3 @@ export const errorHandler = (
     statusCode: error.status_code,
   });
 };
-
-// export const asyncHandler = (func) => {
-//   return (req, res, next) => {
-//       func(req, res, next).catch(err => next(err));
-//   }
-// }
