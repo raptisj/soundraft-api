@@ -88,8 +88,8 @@ const create = async (req: Request, res: Response) => {
   // const trackUrl = req.files.track_url || null;
   // console.log(req.files.track_url, "req.files.track_url");
   const trackUrl = req.body?.track_url !== "null" ? req.body?.track_url : "";
-
   const trackName = req.body?.track_name !== "null" ? req.body?.track_name : "";
+  const trackSize = req.body?.track_size || 0;
 
   // if (!trackUrl) {
   //   return res.status(404).json({ errors: errors.GENERIC });
@@ -125,6 +125,8 @@ const create = async (req: Request, res: Response) => {
     trackUrl,
     versionId,
     trackName,
+    trackSize: BigInt(trackSize),
+    createdBy: res.locals.user.id,
   };
 
   try {
@@ -158,8 +160,9 @@ const uploadTrack = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
 
   const projectId = req.body.project_id;
-  const trackUrl = req.body?.track_url || null;
-  const trackName = req.body?.track_name || null;
+  const trackUrl = req.body?.track_url || "";
+  const trackName = req.body?.track_name || "";
+  const trackSize = req.body?.track_size || 0;
   const versionId = req.body?.version_id ?? null;
 
   if (!trackUrl || !versionId) {
@@ -173,6 +176,8 @@ const uploadTrack = async (req: Request, res: Response) => {
     trackUrl,
     versionId,
     trackName,
+    trackSize: BigInt(trackSize),
+    createdBy: res.locals.user.id,
   };
 
   try {

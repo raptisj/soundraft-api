@@ -56,7 +56,9 @@ const createDefaultProjectAndTicket = async (userId: string) => {
     projectId: project.id,
     trackUrl,
     versionId,
-    trackName: "627981_outfoxing.mp3",
+    trackName: "default_outfoxing.mp3",
+    trackSize: BigInt(1831788), // around 1.8MB
+    createdBy: userId,
   };
 
   await ticketService.create(payload);

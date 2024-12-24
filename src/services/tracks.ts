@@ -28,14 +28,33 @@ type CreateInvitationProps = {
   trackUrl: string;
   versionId: string;
   trackName: string;
+  trackSize: bigint;
+  createdBy: string;
 };
 export const create = async (payload: CreateInvitationProps) => {
-  const { trackId, ticketId, projectId, trackUrl, versionId, trackName } =
-    payload;
+  const {
+    trackId,
+    ticketId,
+    projectId,
+    trackUrl,
+    versionId,
+    trackName,
+    trackSize,
+    createdBy,
+  } = payload;
 
   const results = await db.query(
-    "INSERT INTO tracks (id, ticket_id, project_id, ticket_version_id, track_url, track_name, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *;",
-    [trackId, ticketId, projectId, versionId, trackUrl, trackName]
+    "INSERT INTO tracks (id, ticket_id, project_id, ticket_version_id, track_url, track_name, track_size, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING *;",
+    [
+      trackId,
+      ticketId,
+      projectId,
+      versionId,
+      trackUrl,
+      trackName,
+      trackSize,
+      createdBy,
+    ]
   );
 
   return {
