@@ -60,12 +60,11 @@ export const getSingle = async (id: string) => {
 type CreateProjectProps = {
   name: string;
   description?: string;
+  createdBy: string;
 };
 
-export const create = async (
-  payload: CreateProjectProps
-): Promise<{ data: any; error: any }> => {
-  const { name, description = "" } = payload;
+export const create = async (payload: CreateProjectProps) => {
+  const { name, description = "", createdBy } = payload;
   const projectId = generateEntityId("prj");
 
   if (!name) {
@@ -77,8 +76,8 @@ export const create = async (
 
   // abstract this away
   const results = await db.query(
-    "INSERT INTO projects (id, name, description, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *",
-    [projectId, name, description]
+    "INSERT INTO projects (id, name, description, created_by, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *",
+    [projectId, name, description, createdBy]
   );
 
   return {

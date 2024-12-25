@@ -46,7 +46,10 @@ const create = async (req: Request, res: Response) => {
 
   try {
     // TODO: make this a transaction
-    const { data, error } = await projectService.create(req.body);
+    const { data, error } = await projectService.create({
+      ...req.body,
+      createdBy: res.locals.user.id,
+    });
     if (error) {
       return res.status(404).json({ errors: error });
     }

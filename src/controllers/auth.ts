@@ -26,6 +26,7 @@ const createDefaultProjectAndTicket = async (userId: string) => {
   const { data: project } = await projectService.create({
     name: "First project",
     description: "This is an important project",
+    createdBy: userId,
   });
 
   await roleService.createRole("admin", userId, project.id);
