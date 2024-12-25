@@ -89,11 +89,7 @@ const create = async (req: Request, res: Response) => {
   // console.log(req.files.track_url, "req.files.track_url");
   const trackUrl = req.body?.track_url !== "null" ? req.body?.track_url : "";
   const trackName = req.body?.track_name !== "null" ? req.body?.track_name : "";
-  const trackSize = req.body?.track_size || 0;
-
-  // if (!trackUrl) {
-  //   return res.status(404).json({ errors: errors.GENERIC });
-  // }
+  const trackSize = req.body?.track_size !== "null" ? req.body?.track_size : 0;
 
   const ticketId = generateEntityId("ti");
   const trackId = generateEntityId("tra");
@@ -116,6 +112,7 @@ const create = async (req: Request, res: Response) => {
     status,
     title,
     description,
+    createdBy: res.locals.user.id,
   };
 
   const trackPayload = {

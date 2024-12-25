@@ -21,7 +21,17 @@ export const getSingle = async (id: string) => {
   };
 };
 
-export const create = async (payload: any): Promise<any> => {
+type CreateTicketProps = {
+  ticketId: string;
+  projectId: string;
+  assignee?: string | null;
+  deadline?: string | Date | null;
+  status?: string | null;
+  title: string;
+  description: string;
+  createdBy: string;
+};
+export const create = async (payload: CreateTicketProps) => {
   const {
     ticketId,
     projectId,
@@ -30,10 +40,13 @@ export const create = async (payload: any): Promise<any> => {
     status,
     title,
     description,
+    createdBy,
   } = payload;
 
+  // created_by,
+  // createdBy,
   const results = await db.query(
-    "INSERT INTO tickets (id, project_id, title, description, ticket_status, assignee, deadline, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING *;",
+    "INSERT INTO tickets (id, project_id, title, description, ticket_status, assignee, deadline, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING *;",
     [ticketId, projectId, title, description, status, assignee, deadline]
   );
 
@@ -42,7 +55,14 @@ export const create = async (payload: any): Promise<any> => {
   };
 };
 
-export const update = async (id: string, payload: any): Promise<any> => {
+type UpdateTicketProps = {
+  assignee?: string | null;
+  deadline?: string | Date | null;
+  status?: string | null;
+  title: string;
+  description: string;
+};
+export const update = async (id: string, payload: UpdateTicketProps) => {
   const { title, description, status, assignee, deadline } = payload;
 
   const results = await db.query(

@@ -45,6 +45,7 @@ const createDefaultProjectAndTicket = async (userId: string) => {
     status: "todo",
     title: "First draft",
     description: "This is my cool draft",
+    createdBy: userId,
   };
 
   const trackUrl =

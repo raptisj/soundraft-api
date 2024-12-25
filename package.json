@@ -7,6 +7,11 @@
     "dev": "tsx watch --env-file=.env ./src/index.ts",
     "start": "tsx dist/index.js",
     "build": "npx tsc",
+    "migrate": "node-pg-migrate",
+    "migrate:up": "export $(cat .env | xargs) && DATABASE_URL=$DATABASE_URL npm run migrate up",
+    "migrate:down": "export $(cat .env | xargs) && DATABASE_URL=$DATABASE_URL npm run migrate down",
+    "migrate:prod:up": "export $(cat .env.production | xargs) && DATABASE_URL=$DATABASE_URL npm run migrate up",
+    "migrate:prod:down": "export $(cat .env.production | xargs) && DATABASE_URL=$DATABASE_URL npm run migrate down",
     "clean": "rm -rf dist"
   },
   "keywords": [],
@@ -37,6 +42,7 @@
     "@types/express-fileupload": "^1.5.0",
     "@types/node": "^20.12.3",
     "@types/pg": "^8.11.4",
-    "@types/uuid": "^9.0.8"
+    "@types/uuid": "^9.0.8",
+    "node-pg-migrate": "^7.8.0"
   }
 }

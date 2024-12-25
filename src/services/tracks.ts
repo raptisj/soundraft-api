@@ -21,7 +21,7 @@ export const getAll = async (ticket_id: string) => {
   };
 };
 
-type CreateInvitationProps = {
+type CreateTrackProps = {
   trackId: string;
   ticketId: string;
   projectId: string;
@@ -31,7 +31,7 @@ type CreateInvitationProps = {
   trackSize: bigint;
   createdBy: string;
 };
-export const create = async (payload: CreateInvitationProps) => {
+export const create = async (payload: CreateTrackProps) => {
   const {
     trackId,
     ticketId,
