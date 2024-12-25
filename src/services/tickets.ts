@@ -43,11 +43,18 @@ export const create = async (payload: CreateTicketProps) => {
     createdBy,
   } = payload;
 
-  // created_by,
-  // createdBy,
   const results = await db.query(
-    "INSERT INTO tickets (id, project_id, title, description, ticket_status, assignee, deadline, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING *;",
-    [ticketId, projectId, title, description, status, assignee, deadline]
+    "INSERT INTO tickets (id, project_id, title, description, ticket_status, assignee, deadline, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING *;",
+    [
+      ticketId,
+      projectId,
+      title,
+      description,
+      status,
+      assignee,
+      deadline,
+      createdBy,
+    ]
   );
 
   return {
