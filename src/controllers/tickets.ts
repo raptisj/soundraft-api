@@ -206,7 +206,10 @@ const update = async (req: Request, res: Response) => {
 
   const assignee: string = req.body?.assignee ?? ticket.assignee;
   const deadline: string = req.body?.deadline ?? ticket.deadline;
-  const status: string = req.body?.status ?? ticket.ticket_status;
+  const status: string =
+    req.body?.status === "no_status"
+      ? null
+      : req.body?.status ?? ticket.ticket_status;
   const title: string = req.body?.title ?? ticket.title;
   const description: string = req.body?.description ?? ticket.description;
 
