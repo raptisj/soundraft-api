@@ -182,6 +182,16 @@ const logout = async (req: Request, res: Response) => {
 };
 
 const currentUser = async (req: Request, res: Response) => {
+  if (!res.locals.user && res.locals.anon_user_id) {
+    return res.status(200).json({
+      id: res.locals.anon_user_id,
+      username: "Anonymous",
+      email: "",
+      first_name: "",
+      last_name: "",
+    });
+  }
+
   if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }

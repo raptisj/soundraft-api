@@ -57,6 +57,10 @@ export const errors = {
     message: "Invitation already sent",
     error_code: "invitation_already_sent",
   },
+  PUBLIC_PAGE_DOES_NOT_EXIST: {
+    message: "Public page does not exist",
+    error_code: "public_page_does_not_exist",
+  },
 };
 
 export const COOKIE_KEY = "auth_session";

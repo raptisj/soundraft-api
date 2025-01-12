@@ -5,19 +5,17 @@ import * as roleService from "../services/roles";
 import * as projectService from "../services/projects";
 import * as trackService from "../services/tracks";
 import * as commentService from "../services/comments";
-import { generateEntityId } from "../utils";
+import * as publicTokenService from "../services/publicTokens";
+import { generateEntityId, isProd } from "../utils";
 import { CustomError } from "../config/errors";
+import Cookies from "cookies";
 
 const getAll = async (req: Request, res: Response) => {
   if (!res.locals.user) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
-  const projectId = req.params.projectId;
-  // const projectId = req.body?.project_id || null;
-  // if (!projectId) {
-  //   return res.status(404).json({ errors: errors.GENERIC });
-  // }
+  const projectId = req.query.project_id as string;
 
   try {
     const { data } = await ticketService.getAll(projectId);
@@ -258,7 +256,7 @@ const del = async (req: Request, res: Response) => {
 };
 
 const getAllVersions = async (req: Request, res: Response) => {
-  if (!res.locals.user) {
+  if (!res.locals.user && !res.locals.anon_user_id) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
@@ -354,6 +352,74 @@ const deleteVersion = async (req: Request, res: Response) => {
   }
 };
 
+//
+////
+//////
+//////// PUBLIC
+//////
+////
+//
+
+const getPublicSingle = async (req: Request, res: Response) => {
+  const cookies = new Cookies(req, res, {});
+  const token = req.params.token;
+  const versionId = req.query.version_id as string;
+
+  try {
+    const { data: publicTokenPage } = await publicTokenService.getSingleByToken(
+      token
+    );
+    if (!publicTokenPage || !publicTokenPage.metadata.enabled) {
+      return res
+        .status(404)
+        .json({ errors: errors.PUBLIC_PAGE_DOES_NOT_EXIST });
+    }
+
+    const ticketId = publicTokenPage.resource_id;
+    const { data: ticket } = await ticketService.getSingle(ticketId);
+
+    const { data: ticketVersion } = await ticketService.getVersion(
+      versionId,
+      ticketId
+    );
+
+    const { data: track } = await trackService.getSingle(
+      ticketId,
+      ticketVersion.id
+    );
+
+    const { data: tracks } = await trackService.getAll(ticketId);
+    const trackNames = tracks.map((t) => t.track_name) || [];
+
+    const { data: allTicketVersions } = await ticketService.getAllVersions(
+      ticketId
+    );
+
+    const anonUserId = cookies.get("sd_auid");
+    if (!anonUserId) {
+      const newAnonId = generateEntityId("anon");
+      cookies.set("sd_auid", newAnonId, {
+        secure: isProd(),
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+    }
+
+    return res.status(200).json({
+      ticket,
+      current_version: ticketVersion,
+      versions: allTicketVersions,
+      track,
+      track_names: trackNames,
+      public_data: {
+        metadata: publicTokenPage.metadata,
+      },
+    });
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).json({ errors: errors.GENERIC });
+  }
+};
+
 export {
   getAll,
   getSingle,
@@ -365,4 +431,5 @@ export {
   getSingleVersion,
   createVersion,
   deleteVersion,
+  getPublicSingle,
 };

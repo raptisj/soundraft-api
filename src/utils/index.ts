@@ -23,7 +23,9 @@ type GenerateEntityIdType =
   | "inv" // invitation
   | "rct" // reaction
   | "rol" // role
-  | "usr"; // user
+  | "usr" // user
+  | "anon" // anon user
+  | "pbt"; // public token
 
 export const generateEntityId = (str: GenerateEntityIdType) => {
   const id = uuidv4();

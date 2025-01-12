@@ -13,10 +13,10 @@ export const getAll = async (ticketId: string, ticketVersionId: string) => {
       'created_at', r.created_at
       ) AS region,
         json_build_object(
-        'id', u.id,
+        'id', u.id, 
         'first_name', u.first_name,
         'last_name', u.last_name,
-        'username', u.username,
+        'username', COALESCE(u.username, 'Anonymous'),
         'email', u.email
       ) AS user
       FROM comments c

@@ -8,7 +8,7 @@ const getAll = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
   const ticketVersionId = req.query.ticket_version_id as string;
 
-  if (!res.locals.user) {
+  if (!res.locals.user && !res.locals.anon_user_id) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
@@ -18,7 +18,8 @@ const getAll = async (req: Request, res: Response) => {
       ticketVersionId
     );
 
-    // TODO: find a better way to doo this
+    // TODO: find a better way to do this
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const sanitizeResponse = comments.map((c: any) => {
       if (!c.region.id) {
         return { ...c, region: null };
@@ -37,11 +38,11 @@ const getAll = async (req: Request, res: Response) => {
 const create = async (req: Request, res: Response) => {
   const ticketId = req.params.ticketId;
 
-  if (!res.locals.user) {
+  if (!res.locals.user && !res.locals.anon_user_id) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
-  const userId = res.locals?.user?.id || "0";
+  const userId = res.locals?.user?.id || res.locals.anon_user_id;
 
   // comment body
   const commentId = generateEntityId("com");
@@ -84,9 +85,7 @@ const create = async (req: Request, res: Response) => {
 
   try {
     const { data: comment } = await commentService.create(payload);
-    // if (error) {
-    //   return res.status(404).json({ errors: error });
-    // }
+
     const response = {
       ...comment,
       region: null,
@@ -106,7 +105,7 @@ const create = async (req: Request, res: Response) => {
 };
 
 const update = async (req: Request, res: Response) => {
-  if (!res.locals.user) {
+  if (!res.locals.user && !res.locals.anon_user_id) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 
@@ -144,9 +143,7 @@ const update = async (req: Request, res: Response) => {
 
   try {
     const { data: comment } = await commentService.update(payload);
-    // if (error) {
-    //   return res.status(404).json({ errors: error });
-    // }
+
     const response = {
       ...comment,
       region: null,
@@ -166,7 +163,7 @@ const update = async (req: Request, res: Response) => {
 };
 
 const del = async (req: Request, res: Response) => {
-  if (!res.locals.user) {
+  if (!res.locals.user && !res.locals.anon_user_id) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
   }
 

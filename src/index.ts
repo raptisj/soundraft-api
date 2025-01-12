@@ -8,7 +8,9 @@ import { router as invitationRouter } from "./router/invitations";
 import { router as commentRouter } from "./router/comments";
 import { router as roleRouter } from "./router/roles";
 import { router as reactionRouter } from "./router/reactions";
+import { router as publicTokenRouter } from "./router/publicTokens";
 import Cookies from "cookies";
+import { rateLimit } from "express-rate-limit";
 
 import fileUpload from "express-fileupload";
 import cors from "cors";
@@ -35,7 +37,7 @@ const corsOptions = {
 };
 
 app.use(helmet());
-app.set("trust proxy", true);
+app.set("trust proxy", 1); // true
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
@@ -66,10 +68,19 @@ app.use(errorHandler);
 app.use(async (req, res, next) => {
   const cookies = new Cookies(req, res, {});
   const token = cookies.get(COOKIE_KEY);
+  const anonUserId = cookies.get("sd_auid");
 
-  if (!token) {
+  if (!token && !anonUserId) {
     res.locals.user = null;
     res.locals.session = null;
+
+    return next();
+  }
+
+  if (!token && anonUserId) {
+    res.locals.user = null;
+    res.locals.session = null;
+    res.locals.anon_user_id = anonUserId;
 
     return next();
   }
@@ -87,6 +98,35 @@ app.use(async (req, res, next) => {
   }
   res.locals.session = session;
   res.locals.user = user;
+  res.locals.anon_user_id = null;
+
+  return next();
+});
+
+export const publicPageLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 15,
+  message: "Too many requests to public page, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (_, res) => res.locals?.user?.id,
+});
+
+app.use(async (req, res, next) => {
+  const cookies = new Cookies(req, res, {});
+  const token = cookies.get(COOKIE_KEY);
+  const anonUserId = cookies.get("sd_auid");
+
+  if (!token && anonUserId) {
+    if (
+      req.path.startsWith("/v1/public/tickets") ||
+      req.path.startsWith("/v1/user") ||
+      req.path.startsWith("/v1/tickets") ||
+      req.path.startsWith("/v1/reactions")
+    ) {
+      return publicPageLimiter(req, res, next);
+    }
+  }
 
   return next();
 });
@@ -98,6 +138,7 @@ app.use("/", invitationRouter);
 app.use("/", commentRouter);
 app.use("/", roleRouter);
 app.use("/", reactionRouter);
+app.use("/", publicTokenRouter);
 
 app.listen(port, async () => {
   console.log("Server is up and listening...🎧..🎸.🥁");

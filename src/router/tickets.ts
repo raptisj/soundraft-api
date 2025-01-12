@@ -22,4 +22,8 @@ router.delete(
   "/v1/tickets/:ticketId/versions/:versionId",
   ticketController.deleteVersion
 );
+
+// public
+router.get("/v1/public/tickets/:token", ticketController.getPublicSingle);
+
 export { router };
