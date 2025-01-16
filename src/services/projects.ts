@@ -94,7 +94,7 @@ export const update = async (
   userId: string
 ) => {
   const results = await db.query(
-    `UPDATE projects p SET name = $2, description = $3, project_status = $4
+    `UPDATE projects p SET name = $2, description = $3, project_status = $4, updated_at = NOW()
       WHERE p.id = $1
       AND EXISTS (  
       SELECT 1

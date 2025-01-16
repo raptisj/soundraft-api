@@ -66,7 +66,7 @@ export const update = async (payload: any) => {
   const { commentId, ticketId, ticketVersionId, content } = payload;
 
   const results = await db.query(
-    "UPDATE comments SET content = $4 WHERE id = $1 AND ticket_id = $2 AND ticket_version_id = $3 RETURNING *;",
+    "UPDATE comments SET content = $4, updated_at = NOW() WHERE id = $1 AND ticket_id = $2 AND ticket_version_id = $3 RETURNING *;",
     [commentId, ticketId, ticketVersionId, content]
   );
 

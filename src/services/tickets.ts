@@ -73,7 +73,7 @@ export const update = async (id: string, payload: UpdateTicketProps) => {
   const { title, description, status, assignee, deadline } = payload;
 
   const results = await db.query(
-    "UPDATE tickets SET title = $2, description = $3, ticket_status = $4, assignee = $5, deadline = $6 WHERE id = $1 RETURNING *;",
+    "UPDATE tickets SET title = $2, description = $3, ticket_status = $4, assignee = $5, deadline = $6, updated_at = NOW() WHERE id = $1 RETURNING *;",
     [id, title, description, status, assignee, deadline]
   );
 
