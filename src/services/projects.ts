@@ -91,21 +91,20 @@ export const update = async (
   name: string,
   description: string,
   projectStatus: string,
-  userId: string,
-  accessType: string
+  userId: string
 ) => {
   const results = await db.query(
-    `UPDATE projects p SET name = $2, description = $3, project_status = $4, access_type = $5
+    `UPDATE projects p SET name = $2, description = $3, project_status = $4
       WHERE p.id = $1
       AND EXISTS (  
       SELECT 1
       FROM roles
       INNER JOIN users u ON roles.user_id = u.id
       WHERE roles.project_id = $1
-        AND u.id = $6
+        AND u.id = $5
         AND roles.role = 'admin'
     ) RETURNING *;`,
-    [id, name, description, projectStatus, accessType, userId]
+    [id, name, description, projectStatus, userId]
   );
 
   return {
@@ -122,22 +121,5 @@ export const deleteProject = async (id: string) => {
 
   return {
     data: {},
-  };
-};
-
-export const accessProject = async (id: string) => {
-  const result = await db.query(
-    "SELECT access_type FROM projects WHERE id = $1;",
-    [id]
-  );
-
-  let userResult = null;
-  if (result?.rows[0]?.access_type !== "limited") {
-    userResult = await db.query("SELECT * FROM users WHERE id = $1;", ["0"]);
-  }
-
-  return {
-    data: result?.rows[0],
-    user: userResult || null,
   };
 };

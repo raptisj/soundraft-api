@@ -83,7 +83,6 @@ const update = async (req: Request, res: Response) => {
     req.body?.project_status ?? projectData.project_status;
   const description: string =
     req.body?.description ?? projectData.description ?? "";
-  const accessType: string = req.body?.access_type ?? projectData.access_type;
 
   try {
     const { data } = await projectService.update(
@@ -91,8 +90,7 @@ const update = async (req: Request, res: Response) => {
       name,
       description,
       projectStatus,
-      userId,
-      accessType
+      userId
     );
 
     return res.status(200).json(data);
