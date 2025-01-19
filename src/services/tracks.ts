@@ -24,7 +24,6 @@ export const getAll = async (ticket_id: string) => {
 type CreateTrackProps = {
   trackId: string;
   ticketId: string;
-  projectId: string;
   trackUrl: string;
   versionId: string;
   trackName: string;
@@ -35,7 +34,6 @@ export const create = async (payload: CreateTrackProps) => {
   const {
     trackId,
     ticketId,
-    projectId,
     trackUrl,
     versionId,
     trackName,
@@ -44,17 +42,8 @@ export const create = async (payload: CreateTrackProps) => {
   } = payload;
 
   const results = await db.query(
-    "INSERT INTO tracks (id, ticket_id, project_id, ticket_version_id, track_url, track_name, track_size, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING *;",
-    [
-      trackId,
-      ticketId,
-      projectId,
-      versionId,
-      trackUrl,
-      trackName,
-      trackSize,
-      createdBy,
-    ]
+    "INSERT INTO tracks (id, ticket_id, ticket_version_id, track_url, track_name, track_size, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING *;",
+    [trackId, ticketId, versionId, trackUrl, trackName, trackSize, createdBy]
   );
 
   return {

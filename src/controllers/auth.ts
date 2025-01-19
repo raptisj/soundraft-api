@@ -55,7 +55,6 @@ const createDefaultProjectAndTicket = async (userId: string) => {
   const trackPayload = {
     trackId,
     ticketId,
-    projectId: project.id,
     trackUrl,
     versionId,
     trackName: "default_outfoxing.mp3",
@@ -118,21 +117,22 @@ const signUp = async (req: Request, res: Response) => {
     });
     return res.status(201).json({ status: "success", userId: user.id });
   } catch (e) {
-    logger.error({ error: e }, "error in sign up");
+    logger.error({ error: e }, `Error in sign up for email: ${req.body.email}`);
     return res.status(400).json({ errors: errors.GENERIC });
   }
 };
 
 const login = async (req: Request, res: Response) => {
+  const email: string | null = req.body.email ?? null;
+  const password: string | null = req.body.password ?? null;
+
   try {
-    const email: string | null = req.body.email ?? null;
     if (!isValidEmail(email)) {
       return res
         .status(404)
         .json({ errors: errors.INVALID_EMAIL, status: "error" });
     }
 
-    const password: string | null = req.body.password ?? null;
     if (!isValidPassword(password)) {
       return res.status(404).json({ errors: errors.INVALID_PASSWORD });
     }
@@ -163,8 +163,7 @@ const login = async (req: Request, res: Response) => {
 
     return res.status(200).json({ status: "success", userId: existingUser.id });
   } catch (error) {
-    console.log(error, "error log");
-    logger.error({ error }, "error in sign in");
+    logger.error({ error }, `Error in sign in for email: ${email}`);
     return res.status(404).json({ errors: errors.GENERIC, status: "error" });
   }
 };
@@ -178,7 +177,7 @@ const logout = async (req: Request, res: Response) => {
   cookies.set(COOKIE_KEY, "", { maxAge: 0 });
   await invalidateSession(res.locals.session.id);
 
-  return res.status(200).end();
+  return res.status(200).json({});
 };
 
 const currentUser = async (req: Request, res: Response) => {
@@ -218,8 +217,8 @@ const updateUserProfile = async (req: Request, res: Response) => {
     );
 
     return res.status(200).json({ updatedUser });
-  } catch (e) {
-    console.log(e, "e");
+  } catch (error) {
+    logger.error({ error }, `Error when updating user with id: ${userId}`);
     return res.status(404).end();
   }
 };

@@ -116,7 +116,6 @@ const create = async (req: Request, res: Response) => {
   const trackPayload = {
     trackId,
     ticketId,
-    projectId,
     trackUrl,
     versionId,
     trackName,
@@ -154,7 +153,6 @@ const uploadTrack = async (req: Request, res: Response) => {
   const trackId = generateEntityId("tra");
   const ticketId = req.params.ticketId;
 
-  const projectId = req.body.project_id;
   const trackUrl = req.body?.track_url || "";
   const trackName = req.body?.track_name || "";
   const trackSize = req.body?.track_size || 0;
@@ -167,7 +165,6 @@ const uploadTrack = async (req: Request, res: Response) => {
   const trackPayload = {
     trackId,
     ticketId,
-    projectId,
     trackUrl,
     versionId,
     trackName,
