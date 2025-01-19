@@ -8,6 +8,7 @@ router.get("/v1/tickets", ticketController.getAll);
 router.get("/v1/tickets/:ticketId", ticketController.getSingle);
 router.post("/v1/tickets", ticketController.create);
 router.put("/v1/tickets/:ticketId", ticketController.update);
+router.put("/v1/tickets/:ticketId/move", ticketController.move);
 router.delete("/v1/tickets/:ticketId", ticketController.del);
 
 router.post("/v1/tickets/:ticketId/track", ticketController.uploadTrack);

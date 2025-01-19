@@ -252,6 +252,42 @@ const del = async (req: Request, res: Response) => {
   }
 };
 
+const move = async (req: Request, res: Response) => {
+  if (!res.locals.user) {
+    return res.status(401).json({ errors: errors.UNAUTHENTICATED });
+  }
+
+  const userId = res.locals.user.id;
+  const ticketId = req.params.ticketId;
+  const currentProjectId = req.body.current_project_id;
+  const targetProjectId = req.body.target_project_id;
+
+  const isAdminInCurrentProject = await roleService.isProjectAdmin(
+    currentProjectId,
+    userId
+  );
+  if (!isAdminInCurrentProject) {
+    return res.status(404).json({ errors: errors.USER_NOT_ADMIN });
+  }
+
+  const isAdminInTargetProject = await roleService.isProjectAdmin(
+    targetProjectId,
+    userId
+  );
+  if (!isAdminInTargetProject) {
+    return res.status(404).json({ errors: errors.USER_NOT_ADMIN });
+  }
+
+  try {
+    const { data } = await ticketService.moveTicket(ticketId, targetProjectId);
+
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e, "e");
+    return res.status(404).end();
+  }
+};
+
 const getAllVersions = async (req: Request, res: Response) => {
   if (!res.locals.user && !res.locals.anon_user_id) {
     return res.status(401).json({ errors: errors.UNAUTHENTICATED });
@@ -424,6 +460,7 @@ export {
   uploadTrack,
   update,
   del,
+  move,
   getAllVersions,
   getSingleVersion,
   createVersion,

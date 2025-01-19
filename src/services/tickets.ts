@@ -94,6 +94,17 @@ export const deleteTicket = async (id: string) => {
   };
 };
 
+export const moveTicket = async (id: string, projectId: string) => {
+  const results = await db.query(
+    "UPDATE tickets SET project_id = $2, updated_at = NOW() WHERE id = $1 RETURNING *;",
+    [id, projectId]
+  );
+
+  return {
+    data: results?.rows[0],
+  };
+};
+
 //////////
 ////////
 ////// ticket versions
