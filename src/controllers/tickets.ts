@@ -88,6 +88,7 @@ const create = async (req: Request, res: Response) => {
   const trackUrl = req.body?.track_url !== "null" ? req.body?.track_url : "";
   const trackName = req.body?.track_name !== "null" ? req.body?.track_name : "";
   const trackSize = req.body?.track_size !== "null" ? req.body?.track_size : 0;
+  const trackType = req.body?.track_type !== "null" ? req.body?.track_type : "";
 
   const ticketId = generateEntityId("ti");
   const trackId = generateEntityId("tra");
@@ -120,6 +121,7 @@ const create = async (req: Request, res: Response) => {
     versionId,
     trackName,
     trackSize: BigInt(trackSize),
+    trackType,
     createdBy: res.locals.user.id,
   };
 
@@ -156,6 +158,7 @@ const uploadTrack = async (req: Request, res: Response) => {
   const trackUrl = req.body?.track_url || "";
   const trackName = req.body?.track_name || "";
   const trackSize = req.body?.track_size || 0;
+  const trackType = req.body?.track_type || "";
   const versionId = req.body?.version_id ?? null;
 
   if (!trackUrl || !versionId) {
@@ -169,6 +172,7 @@ const uploadTrack = async (req: Request, res: Response) => {
     versionId,
     trackName,
     trackSize: BigInt(trackSize),
+    trackType,
     createdBy: res.locals.user.id,
   };
 
