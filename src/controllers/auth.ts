@@ -59,6 +59,7 @@ const createDefaultProjectAndTicket = async (userId: string) => {
     versionId,
     trackName: "default_outfoxing.mp3",
     trackSize: BigInt(1831788), // around 1.8MB
+    trackType: "audio/mpeg",
     createdBy: userId,
   };
 
