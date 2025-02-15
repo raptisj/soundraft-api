@@ -14,6 +14,9 @@
     "migrate:prod:down": "export $(cat .env.production | xargs) && DATABASE_URL=$DATABASE_URL npm run migrate down",
     "clean": "rm -rf dist"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
