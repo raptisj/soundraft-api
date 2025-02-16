@@ -13,6 +13,17 @@ export const getAll = async (projectId: string) => {
   };
 };
 
+export const getAllList = async (userId: string) => {
+  const results = await db.query(
+    "SELECT tickets.* FROM tickets JOIN roles ON roles.project_id = tickets.project_id WHERE roles.user_id = $1 ORDER BY created_at DESC;",
+    [userId]
+  );
+
+  return {
+    data: results?.rows ?? [],
+  };
+};
+
 export const getSingle = async (id: string) => {
   const results = await db.query("SELECT * FROM tickets WHERE id = $1;", [id]);
 
