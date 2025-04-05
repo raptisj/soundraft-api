@@ -82,11 +82,13 @@ app.use(async (req, res, next) => {
 });
 
 export const publicPageLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15,
+  windowMs: 15 * 60 * 1000, // 15 minutes maybe do this 30 minutes
+  max: 15, // maybe do this 60 requests per windowMs???
   message: "Too many requests to public page, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
+  handler: (req, res, next, options) =>
+    res.status(429).json({ error: "rate_limit_error" }),
   skip: (_, res) => res.locals?.user?.id,
 });
 
