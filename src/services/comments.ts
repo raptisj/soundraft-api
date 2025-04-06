@@ -33,7 +33,16 @@ export const getAll = async (ticketId: string, ticketVersionId: string) => {
   };
 };
 
-export const create = async (payload: any) => {
+type CreateCommentProps = {
+  commentId: string;
+  ticketId: string;
+  userId: string;
+  trackId: string;
+  ticketVersionId: string;
+  content: string;
+  parentCommentId: string | null;
+};
+export const create = async (payload: CreateCommentProps) => {
   const {
     commentId,
     ticketId,
@@ -45,7 +54,21 @@ export const create = async (payload: any) => {
   } = payload;
 
   const results = await db.query(
-    "INSERT INTO comments (id, ticket_id, track_id, ticket_version_id, user_id, content, parent_comment_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING *;",
+    `WITH new_comment AS (
+      INSERT INTO comments (id, ticket_id, track_id, ticket_version_id, user_id, content, parent_comment_id, created_at) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) 
+      RETURNING *
+    ) SELECT 
+        new_comment.*, 
+        json_build_object(
+          'id', u.id, 
+          'first_name', u.first_name,
+          'last_name', u.last_name,
+          'username', COALESCE(u.username, 'Anonymous'),
+          'email', u.email
+        ) AS user 
+      FROM new_comment
+      JOIN users u ON new_comment.user_id = u.id;`,
     [
       commentId,
       ticketId,
