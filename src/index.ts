@@ -134,25 +134,3 @@ process.on("unhandledRejection", (error: Error) => {
   console.error(error, "global unhandledRejection");
   process.exit(1);
 });
-
-// app.use((req, res, next) => {
-//   //   if (req.method === "GET") {
-//   //     return next();
-//   //   }
-//   const originHeader = req.headers.origin ?? null;
-//   const hostHeader = req.headers.host ?? null;
-//   // console.log(originHeader, "originHeader");
-//   // console.log(hostHeader, "hostHeader");
-//   //   console.log(
-//   //     verifyRequestOrigin(originHeader, [hostHeader]),
-//   //     "verifyRequestOrigin(originHeader, [hostHeader])"
-//   //   );
-//   //   if (
-//   //     !originHeader ||
-//   //     !hostHeader ||
-//   //     !verifyRequestOrigin(originHeader, [hostHeader])
-//   //   ) {
-//   //     return res.status(403).end();
-//   //   }
-//   return next();
-// });
